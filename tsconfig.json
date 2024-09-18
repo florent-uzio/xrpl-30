@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // Target ECMAScript version
+    "module": "CommonJS", // Module system
+    "strict": true, // Enable strict type-checking options
+    "esModuleInterop": true, // Allows default imports from CommonJS modules
+    "forceConsistentCasingInFileNames": true, // Enforces consistent file casing
+    "skipLibCheck": true, // Skip type-checking of all declaration files
+    "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./src", // Root directory of input files
+    "moduleResolution": "node", // Resolve module using Node.js strategy
+    "noImplicitAny": true, // Raise error on expressions and declarations with an implied `any` type
+    "noEmitOnError": true // Don't emit files if there are TypeScript errors
+  },
+  "include": [
+    "src/**/*" // Files to include in the compilation
+  ],
+  "exclude": [
+    "node_modules", // Exclude dependencies folder
+    "dist" // Exclude the output folder from the build process
+  ]
+}
