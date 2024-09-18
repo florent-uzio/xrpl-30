@@ -1,5 +1,5 @@
 # XRPL 30
 
-Tutorials about the XRPL
+Tutorials about the XRPL.
 
-1. Send Payment [here](./src/send-payment).
+1. How to send a payment [code here](./src/send-payment.ts).
