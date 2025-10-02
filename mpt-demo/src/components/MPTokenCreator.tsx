@@ -25,6 +25,7 @@ interface MPTokenCreatorProps {
   client: Client | null;
   account: Account | null;
   onTransactionCreated: (json: string) => void;
+  onMPTCreated: (mptIssuanceId: string, metadata: any) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
 }
@@ -42,6 +43,7 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
   client,
   account,
   onTransactionCreated,
+  onMPTCreated,
   isLoading,
   setIsLoading,
 }) => {
@@ -216,6 +218,18 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
       const result = await client.submitAndWait(signed.tx_blob);
 
       console.log("MPToken created successfully:", result);
+
+      // Extract MPT issuance ID from the result
+      if (
+        result.result.meta &&
+        typeof result.result.meta === "object" &&
+        "mpt_issuance_id" in result.result.meta
+      ) {
+        const mptIssuanceId = (result.result.meta as any).mpt_issuance_id;
+        const metadata = JSON.parse(formData.metadata);
+        onMPTCreated(mptIssuanceId, metadata);
+        console.log("MPT Issuance ID:", mptIssuanceId);
+      }
 
       // Reset form
       setFormData({

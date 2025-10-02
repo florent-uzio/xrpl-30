@@ -10,10 +10,19 @@ interface Account {
   mptokens: any[];
 }
 
+interface CreatedMPT {
+  mptIssuanceId: string;
+  issuer: string;
+  name: string;
+  ticker: string;
+  createdAt: Date;
+}
+
 interface MPTokenAuthorizerProps {
   client: Client | null;
   account: Account | null;
   accounts: Account[];
+  createdMPTs: CreatedMPT[];
   onTransactionCreated: (json: string) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
@@ -23,6 +32,7 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
   client,
   account,
   accounts,
+  createdMPTs,
   onTransactionCreated,
   isLoading,
   setIsLoading,
@@ -45,9 +55,9 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
       newErrors.mpt = "Please select an MPT";
     }
 
-    if (action === "authorize" && !selectedHolder) {
-      newErrors.holder = "Please select a holder to authorize";
-    }
+    // if (action === "authorize" && !selectedHolder) {
+    //   newErrors.holder = "Please select a holder to authorize";
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -134,15 +144,21 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                MPT Issuance ID
+                Select MPT
               </label>
-              <input
-                type="text"
+              <select
                 value={selectedMPT}
                 onChange={(e) => setSelectedMPT(e.target.value)}
-                className="input-field border border-gray-500 p-2 text-gray-700 w-full"
-                placeholder="Enter MPT Issuance ID..."
-              />
+                className="input-field text-gray-700 w-full border border-gray-500 p-2"
+              >
+                <option value="">Select an MPT...</option>
+                {createdMPTs.map((mpt) => (
+                  <option key={mpt.mptIssuanceId} value={mpt.mptIssuanceId}>
+                    {mpt.ticker} - {mpt.name} (Issuer: {mpt.issuer.slice(0, 8)}
+                    ...)
+                  </option>
+                ))}
+              </select>
               {errors.mpt && (
                 <p className="text-xs text-red-600 mt-1">{errors.mpt}</p>
               )}
@@ -222,6 +238,14 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
               <p>
                 Allows an account to hold a specific MPT. This is required
                 before an account can receive that type of MPT in a payment.
+              </p>
+            </div>
+
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800 text-sm">
+                <strong>Note:</strong> You can authorize any MPT created in this
+                session, regardless of which account created it. The issuer
+                information is shown in the dropdown for reference.
               </p>
             </div>
 

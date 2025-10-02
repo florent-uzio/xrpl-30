@@ -10,10 +10,19 @@ interface Account {
   mptokens: any[];
 }
 
+interface CreatedMPT {
+  mptIssuanceId: string;
+  issuer: string;
+  name: string;
+  ticker: string;
+  createdAt: Date;
+}
+
 interface MPTPaymentProps {
   client: Client | null;
   account: Account | null;
   accounts: Account[];
+  createdMPTs: CreatedMPT[];
   onTransactionCreated: (json: string) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
@@ -23,6 +32,7 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
   client,
   account,
   accounts,
+  createdMPTs,
   onTransactionCreated,
   isLoading,
   setIsLoading,
@@ -178,17 +188,23 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                MPT Issuance ID
+                Select MPT
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.mptIssuanceId}
                 onChange={(e) =>
                   updateFormData("mptIssuanceId", e.target.value)
                 }
                 className="input-field text-gray-700 w-full border border-gray-500 p-2"
-                placeholder="Enter MPT Issuance ID..."
-              />
+              >
+                <option value="">Select an MPT...</option>
+                {createdMPTs.map((mpt) => (
+                  <option key={mpt.mptIssuanceId} value={mpt.mptIssuanceId}>
+                    {mpt.ticker} - {mpt.name} (Issuer: {mpt.issuer.slice(0, 8)}
+                    ...)
+                  </option>
+                ))}
+              </select>
               {errors.mptIssuanceId && (
                 <p className="text-xs text-red-600 mt-1">
                   {errors.mptIssuanceId}
@@ -318,6 +334,14 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
               <p className="text-yellow-800 text-sm">
                 <strong>Note:</strong> The recipient must be authorized to hold
                 this MPT if the token requires authorization.
+              </p>
+            </div>
+
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800 text-sm">
+                <strong>Global Access:</strong> You can send any MPT created in
+                this session, regardless of which account created it. The issuer
+                information is shown in the dropdown for reference.
               </p>
             </div>
           </div>

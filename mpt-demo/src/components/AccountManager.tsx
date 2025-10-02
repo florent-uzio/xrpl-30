@@ -19,10 +19,19 @@ interface Account {
   mptokens: any[];
 }
 
+interface CreatedMPT {
+  mptIssuanceId: string;
+  issuer: string;
+  name: string;
+  ticker: string;
+  createdAt: Date;
+}
+
 interface AccountManagerProps {
   client: Client | null;
   accounts: Account[];
   selectedAccount: Account | null;
+  createdMPTs: CreatedMPT[];
   onAccountSelect: (account: Account) => void;
   onAccountAdd: (account: Account) => void;
   onAccountUpdate: (account: Account) => void;
@@ -34,6 +43,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
   client,
   accounts,
   selectedAccount,
+  createdMPTs,
   onAccountSelect,
   onAccountAdd,
   onAccountUpdate,
@@ -160,6 +170,15 @@ const AccountManager: React.FC<AccountManagerProps> = ({
         <p className="text-sm text-gray-600 mb-4">
           Generate testnet accounts with XRP from the faucet to manage MPTs.
         </p>
+
+        {createdMPTs.length > 0 && (
+          <div className="p-3 bg-green-50 border border-green-200 rounded-lg mb-4">
+            <p className="text-green-800 text-sm">
+              <strong>Global MPTs:</strong> {createdMPTs.length} MPT(s) created
+              in this session
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Accounts List */}
@@ -331,6 +350,16 @@ const AccountManager: React.FC<AccountManagerProps> = ({
               <span className="text-gray-600">MP Tokens:</span>
               <span className="font-semibold text-purple-600">
                 {selectedAccount.mptokens.length}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Created MPTs:</span>
+              <span className="font-semibold text-green-600">
+                {
+                  createdMPTs.filter(
+                    (mpt) => mpt.issuer === selectedAccount.address
+                  ).length
+                }
               </span>
             </div>
           </div>

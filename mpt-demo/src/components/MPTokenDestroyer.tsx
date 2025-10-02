@@ -10,9 +10,18 @@ interface Account {
   mptokens: any[];
 }
 
+interface CreatedMPT {
+  mptIssuanceId: string;
+  issuer: string;
+  name: string;
+  ticker: string;
+  createdAt: Date;
+}
+
 interface MPTokenDestroyerProps {
   client: Client | null;
   account: Account | null;
+  createdMPTs: CreatedMPT[];
   onTransactionCreated: (json: string) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
@@ -21,6 +30,7 @@ interface MPTokenDestroyerProps {
 const MPTokenDestroyer: React.FC<MPTokenDestroyerProps> = ({
   client,
   account,
+  createdMPTs,
   onTransactionCreated,
   isLoading,
   setIsLoading,
@@ -121,15 +131,23 @@ const MPTokenDestroyer: React.FC<MPTokenDestroyerProps> = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                MPT Issuance ID
+                Select MPT to Destroy
               </label>
-              <input
-                type="text"
+              <select
                 value={selectedMPT}
                 onChange={(e) => setSelectedMPT(e.target.value)}
-                className="input-field border border-gray-500 p-2 text-gray-700 w-full"
-                placeholder="Enter MPT Issuance ID to destroy..."
-              />
+                className="input-field text-gray-700 w-full border border-gray-500 p-2"
+              >
+                <option value="">Select an MPT to destroy...</option>
+                {createdMPTs
+                  .filter((mpt) => mpt.issuer === account?.address)
+                  .map((mpt) => (
+                    <option key={mpt.mptIssuanceId} value={mpt.mptIssuanceId}>
+                      {mpt.ticker} - {mpt.name} (Issuer:{" "}
+                      {mpt.issuer.slice(0, 8)}...)
+                    </option>
+                  ))}
+              </select>
               {errors.mpt && (
                 <p className="text-xs text-red-600 mt-1">{errors.mpt}</p>
               )}

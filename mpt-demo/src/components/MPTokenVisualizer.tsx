@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Pause, RotateCcw, ArrowRight, Users, Coins } from "lucide-react";
 
@@ -22,9 +22,7 @@ const MPTokenVisualizer: React.FC<MPTokenVisualizerProps> = (
 ) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationStep, setAnimationStep] = useState(0);
-  const [transferDirection, setTransferDirection] = useState<"left" | "right">(
-    "right"
-  );
+  const [transferDirection] = useState<"left" | "right">("right");
 
   const demoMPTokens = [
     {

@@ -10,10 +10,19 @@ interface Account {
   mptokens: any[];
 }
 
+interface CreatedMPT {
+  mptIssuanceId: string;
+  issuer: string;
+  name: string;
+  ticker: string;
+  createdAt: Date;
+}
+
 interface MPTClawbackProps {
   client: Client | null;
   account: Account | null;
   accounts: Account[];
+  createdMPTs: CreatedMPT[];
   onTransactionCreated: (json: string) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
@@ -23,6 +32,7 @@ const MPTClawback: React.FC<MPTClawbackProps> = ({
   client,
   account,
   accounts,
+  createdMPTs,
   onTransactionCreated,
   isLoading,
   setIsLoading,
@@ -158,17 +168,25 @@ const MPTClawback: React.FC<MPTClawbackProps> = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                MPT Issuance ID
+                Select MPT
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.mptIssuanceId}
                 onChange={(e) =>
                   updateFormData("mptIssuanceId", e.target.value)
                 }
                 className="input-field text-gray-700 w-full border border-gray-500 p-2"
-                placeholder="Enter MPT Issuance ID..."
-              />
+              >
+                <option value="">Select an MPT...</option>
+                {createdMPTs
+                  .filter((mpt) => mpt.issuer === account?.address)
+                  .map((mpt) => (
+                    <option key={mpt.mptIssuanceId} value={mpt.mptIssuanceId}>
+                      {mpt.ticker} - {mpt.name} (Issuer:{" "}
+                      {mpt.issuer.slice(0, 8)}...)
+                    </option>
+                  ))}
+              </select>
               {errors.mptIssuanceId && (
                 <p className="text-xs text-red-600 mt-1">
                   {errors.mptIssuanceId}

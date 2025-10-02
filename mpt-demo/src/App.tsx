@@ -25,6 +25,14 @@ interface MPToken {
   balance?: string;
 }
 
+interface CreatedMPT {
+  mptIssuanceId: string;
+  issuer: string;
+  name: string;
+  ticker: string;
+  createdAt: Date;
+}
+
 interface Account {
   address: string;
   secret: string;
@@ -39,6 +47,7 @@ function App() {
   const [client, setClient] = useState<Client | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [createdMPTs, setCreatedMPTs] = useState<CreatedMPT[]>([]);
   const [activeTab, setActiveTab] = useState<
     "create" | "authorize" | "destroy" | "payment" | "clawback" | "visualize"
   >("create");
@@ -89,6 +98,20 @@ function App() {
 
   const handleTransactionCreated = (json: string) => {
     setTransactionJson(json);
+  };
+
+  const handleMPTCreated = (mptIssuanceId: string, metadata: any) => {
+    if (!selectedAccount) return;
+
+    const newMPT: CreatedMPT = {
+      mptIssuanceId,
+      issuer: selectedAccount.address,
+      name: metadata.name || "Unknown Token",
+      ticker: metadata.ticker || "UNK",
+      createdAt: new Date(),
+    };
+
+    setCreatedMPTs((prev) => [...prev, newMPT]);
   };
 
   const tabs = [
@@ -151,6 +174,7 @@ function App() {
               client={client}
               accounts={accounts}
               selectedAccount={selectedAccount}
+              createdMPTs={createdMPTs}
               onAccountSelect={setSelectedAccount}
               onAccountAdd={addAccount}
               onAccountUpdate={updateAccount}
@@ -205,6 +229,7 @@ function App() {
                         client={client}
                         account={selectedAccount}
                         onTransactionCreated={handleTransactionCreated}
+                        onMPTCreated={handleMPTCreated}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
                       />
@@ -223,6 +248,7 @@ function App() {
                         client={client}
                         account={selectedAccount}
                         accounts={accounts}
+                        createdMPTs={createdMPTs}
                         onTransactionCreated={handleTransactionCreated}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
@@ -241,6 +267,7 @@ function App() {
                       <MPTokenDestroyer
                         client={client}
                         account={selectedAccount}
+                        createdMPTs={createdMPTs}
                         onTransactionCreated={handleTransactionCreated}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
@@ -260,6 +287,7 @@ function App() {
                         client={client}
                         account={selectedAccount}
                         accounts={accounts}
+                        createdMPTs={createdMPTs}
                         onTransactionCreated={handleTransactionCreated}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
@@ -279,6 +307,7 @@ function App() {
                         client={client}
                         account={selectedAccount}
                         accounts={accounts}
+                        createdMPTs={createdMPTs}
                         onTransactionCreated={handleTransactionCreated}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}

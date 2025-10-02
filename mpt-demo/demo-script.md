@@ -37,13 +37,16 @@
 
 - Switch to "Authorize" tab
 - Show how to authorize another account
+- **Highlight global MPT access**: Show that MPTs created by any account are available
 - Explain the authorization process
 - Demonstrate unauthorization
+- Show the issuer information in the dropdown
 
 ### 4. MPT Payments (2 minutes)
 
 - Switch to "Send Payment" tab
 - Show how to send MPTs between accounts
+- **Demonstrate global access**: Switch accounts and show MPTs from other accounts are available
 - Explain the Payment transaction structure with `mpt_issuance_id`
 - Demonstrate direct MPT transfers
 - Show optional fields (destination tag, invoice ID)
