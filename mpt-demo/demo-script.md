@@ -40,7 +40,25 @@
 - Explain the authorization process
 - Demonstrate unauthorization
 
-### 4. Visualization (2 minutes)
+### 4. MPT Payments (2 minutes)
+
+- Switch to "Send Payment" tab
+- Show how to send MPTs between accounts
+- Explain the Payment transaction structure with `mpt_issuance_id`
+- Demonstrate direct MPT transfers
+- Show optional fields (destination tag, invoice ID)
+- Highlight that MPTs can only be sent directly (no DEX trading in v1)
+
+### 5. MPT Clawback (2 minutes)
+
+- Switch to "Clawback" tab
+- Show how issuers can reclaim tokens from holders
+- Explain regulatory compliance use cases
+- Demonstrate the Clawback transaction structure
+- Highlight the issuer authority requirements
+- Show when clawback is useful (fraud prevention, error recovery)
+
+### 6. Visualization (2 minutes)
 
 - Switch to "Visualize" tab
 - Click "Start" to begin animation
@@ -48,7 +66,7 @@
 - Explain the different capabilities
 - Highlight the feature cards
 
-### 5. Advanced Features (1-2 minutes)
+### 7. Advanced Features (1-2 minutes)
 
 - Show different flag combinations
 - Demonstrate restricted tokens (Require Auth)
@@ -72,6 +90,8 @@
 - "Built-in transfer fees for issuers"
 - "Rich metadata support"
 - "Authorization system for compliance"
+- "Direct payment transfers between accounts"
+- "Issuer clawback capabilities for compliance"
 
 ### Use Cases
 

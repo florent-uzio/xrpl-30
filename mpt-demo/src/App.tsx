@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Client } from "xrpl";
-import { Plus, Shield, Trash2, Play } from "lucide-react";
+import { Plus, Shield, Trash2, Play, Send, DollarSign } from "lucide-react";
 
 // Components
 import AccountManager from "./components/AccountManager";
 import MPTokenCreator from "./components/MPTokenCreator";
 import MPTokenAuthorizer from "./components/MPTokenAuthorizer";
 import MPTokenDestroyer from "./components/MPTokenDestroyer";
+import MPTPayment from "./components/MPTPayment";
+import MPTClawback from "./components/MPTClawback";
 import TransactionViewer from "./components/TransactionViewer";
 import MPTokenVisualizer from "./components/MPTokenVisualizer";
 
@@ -38,7 +40,7 @@ function App() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [activeTab, setActiveTab] = useState<
-    "create" | "authorize" | "destroy" | "visualize"
+    "create" | "authorize" | "destroy" | "payment" | "clawback" | "visualize"
   >("create");
   const [isConnected, setIsConnected] = useState(false);
   const [transactionJson, setTransactionJson] = useState<string>("");
@@ -93,6 +95,8 @@ function App() {
     { id: "create", label: "Create MPT", icon: Plus },
     { id: "authorize", label: "Authorize", icon: Shield },
     { id: "destroy", label: "Destroy", icon: Trash2 },
+    { id: "payment", label: "Send Payment", icon: Send },
+    { id: "clawback", label: "Clawback", icon: DollarSign },
     { id: "visualize", label: "Visualize", icon: Play },
   ] as const;
 
@@ -237,6 +241,44 @@ function App() {
                       <MPTokenDestroyer
                         client={client}
                         account={selectedAccount}
+                        onTransactionCreated={handleTransactionCreated}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                      />
+                    </motion.div>
+                  )}
+
+                  {activeTab === "payment" && (
+                    <motion.div
+                      key="payment"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <MPTPayment
+                        client={client}
+                        account={selectedAccount}
+                        accounts={accounts}
+                        onTransactionCreated={handleTransactionCreated}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                      />
+                    </motion.div>
+                  )}
+
+                  {activeTab === "clawback" && (
+                    <motion.div
+                      key="clawback"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <MPTClawback
+                        client={client}
+                        account={selectedAccount}
+                        accounts={accounts}
                         onTransactionCreated={handleTransactionCreated}
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}

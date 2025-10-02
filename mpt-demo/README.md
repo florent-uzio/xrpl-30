@@ -30,6 +30,20 @@ A modern, interactive web application for managing Multi-Purpose Tokens on the X
 - Unauthorize accounts (when balance is zero)
 - Manage allow-listing for restricted tokens
 
+### 💸 MPT Payments
+
+- Send MPTs directly between accounts
+- Support for destination tags and invoice IDs
+- Real-time transaction validation
+- Direct transfer capabilities (no DEX trading in v1)
+
+### 🔄 MPT Clawback
+
+- Reclaim tokens from holders (issuer authority)
+- Regulatory compliance features
+- Fraud prevention and error recovery
+- Requires "Can Clawback" flag to be enabled
+
 ### 🗑️ Token Destruction
 
 - Permanently destroy MPTs (irreversible)
@@ -99,8 +113,10 @@ The built files will be in the `dist` directory.
 2. **Select Account**: Choose an account from the sidebar to perform operations
 3. **Create MPT**: Configure and create Multi-Purpose Tokens with custom flags
 4. **Authorize**: Manage which accounts can hold your tokens
-5. **Visualize**: Watch animated demonstrations of MPT capabilities
-6. **View Transactions**: Copy or download formatted transaction JSON
+5. **Send Payments**: Transfer MPTs directly between accounts
+6. **Clawback**: Reclaim tokens from holders (if enabled)
+7. **Visualize**: Watch animated demonstrations of MPT capabilities
+8. **View Transactions**: Copy or download formatted transaction JSON
 
 ## MPT Flags Explained
 
