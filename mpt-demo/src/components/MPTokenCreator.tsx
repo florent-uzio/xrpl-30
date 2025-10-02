@@ -331,7 +331,7 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
                   onChange={(e) =>
                     updateFormData("assetScale", parseInt(e.target.value))
                   }
-                  className="input-field"
+                  className="input-field border border-gray-500 p-2 text-gray-700 w-full"
                   placeholder="2"
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -354,7 +354,7 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
                   onChange={(e) =>
                     updateFormData("maximumAmount", e.target.value)
                   }
-                  className="input-field"
+                  className="input-field border border-gray-500 p-2 text-gray-700 w-full"
                   placeholder="1000000"
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -379,7 +379,7 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
                   onChange={(e) =>
                     updateFormData("transferFee", parseInt(e.target.value))
                   }
-                  className="input-field"
+                  className="input-field border border-gray-500 p-2 text-gray-700 w-full"
                   placeholder="0"
                   disabled={!flags.tfMPTCanTransfer}
                 />

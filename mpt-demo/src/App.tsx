@@ -267,7 +267,7 @@ function App() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-8"
+                className="mt-8 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden text-gray-700 p-4"
               >
                 <TransactionViewer json={transactionJson} />
               </motion.div>

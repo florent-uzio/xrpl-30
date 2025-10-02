@@ -111,7 +111,7 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
           animate={{ opacity: 1, y: 0 }}
           className="card bg-yellow-50 border-yellow-200"
         >
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 px-4 py-2">
             <AlertTriangle className="w-6 h-6 text-yellow-600" />
             <div>
               <h3 className="font-semibold text-yellow-800">
@@ -140,7 +140,7 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
                 type="text"
                 value={selectedMPT}
                 onChange={(e) => setSelectedMPT(e.target.value)}
-                className="input-field"
+                className="input-field border border-gray-500 p-2 text-gray-700 w-full"
                 placeholder="Enter MPT Issuance ID..."
               />
               {errors.mpt && (
@@ -194,7 +194,7 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
                 <select
                   value={selectedHolder}
                   onChange={(e) => setSelectedHolder(e.target.value)}
-                  className="input-field"
+                  className="input-field border border-gray-500 p-2 text-gray-700 w-full"
                 >
                   <option value="">Select a holder...</option>
                   {accounts.map((acc) => (
@@ -239,7 +239,7 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
           <button
             onClick={authorizeMPT}
             disabled={!account || isLoading || Object.keys(errors).length > 0}
-            className="w-full mt-6 btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-6 btn-primary text-white flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 px-4 py-2 rounded-full cursor-pointer"
           >
             {isLoading ? (
               <>

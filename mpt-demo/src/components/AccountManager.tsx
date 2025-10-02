@@ -179,7 +179,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
               }`}
               onClick={() => onAccountSelect(account)}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
@@ -237,7 +237,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
               </div>
 
               {/* Secret Key (Collapsible) */}
-              <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="mt-3 pt-3 border-t border-gray-200 p-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">Secret Key:</span>
                   <button
@@ -269,7 +269,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
                     className="mt-2"
                   >
                     <div className="flex items-center space-x-2">
-                      <code className="flex-1 text-xs bg-gray-100 p-2 rounded font-mono break-all">
+                      <code className="flex-1 text-xs bg-gray-100 p-2 rounded font-mono break-all text-gray-700">
                         {account.secret}
                       </code>
                       <button
@@ -313,7 +313,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
           className="card bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200"
         >
           <h3 className="font-semibold text-gray-900 mb-2">Selected Account</h3>
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2 text-sm p-3">
             <div className="flex justify-between">
               <span className="text-gray-600">Address:</span>
               <code className="text-blue-600 font-mono">

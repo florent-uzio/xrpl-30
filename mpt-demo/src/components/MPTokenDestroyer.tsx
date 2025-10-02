@@ -127,7 +127,7 @@ const MPTokenDestroyer: React.FC<MPTokenDestroyerProps> = ({
                 type="text"
                 value={selectedMPT}
                 onChange={(e) => setSelectedMPT(e.target.value)}
-                className="input-field"
+                className="input-field border border-gray-500 p-2 text-gray-700 w-full"
                 placeholder="Enter MPT Issuance ID to destroy..."
               />
               {errors.mpt && (
@@ -170,7 +170,7 @@ const MPTokenDestroyer: React.FC<MPTokenDestroyerProps> = ({
           <button
             onClick={destroyMPToken}
             disabled={!account || isLoading || Object.keys(errors).length > 0}
-            className="w-full mt-6 btn-danger flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-6 btn-danger text-white flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed bg-red-600 px-4 py-2 rounded-full cursor-pointer"
           >
             {isLoading ? (
               <>
