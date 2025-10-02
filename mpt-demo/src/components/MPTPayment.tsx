@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Client, Wallet } from "xrpl";
+import { Client, Wallet, type Payment } from "xrpl";
 import { Send, AlertTriangle, Coins } from "lucide-react";
 
 interface Account {
@@ -80,7 +80,7 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
 
     setIsLoading(true);
     try {
-      const transaction: any = {
+      const transaction: Payment = {
         TransactionType: "Payment",
         Account: account.address,
         Destination: formData.destination,
@@ -88,14 +88,14 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
           mpt_issuance_id: formData.mptIssuanceId,
           value: formData.amount,
         },
-        DeliverMax: {
-          mpt_issuance_id: formData.mptIssuanceId,
-          value: formData.amount,
-        },
-        SendMax: {
-          mpt_issuance_id: formData.mptIssuanceId,
-          value: formData.amount,
-        },
+        // DeliverMax: {
+        //   mpt_issuance_id: formData.mptIssuanceId,
+        //   value: formData.amount,
+        // },
+        // SendMax: {
+        //   mpt_issuance_id: formData.mptIssuanceId,
+        //   value: formData.amount,
+        // },
         Fee: "120",
         Flags: 0,
       };
@@ -179,6 +179,27 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
         </motion.div>
       )}
 
+      {account && accounts.length <= 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card bg-blue-50 border-blue-200"
+        >
+          <div className="flex items-center space-x-3">
+            <AlertTriangle className="w-6 h-6 text-blue-600" />
+            <div>
+              <h3 className="font-semibold text-blue-800">
+                Need More Accounts
+              </h3>
+              <p className="text-blue-700">
+                You need at least 2 accounts to send MPTs. Generate another
+                account from the sidebar.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -240,17 +261,45 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
                 <option value="">Select destination account...</option>
                 {accounts
                   .filter((acc) => acc.address !== account?.address)
-                  .map((acc) => (
-                    <option key={acc.address} value={acc.address}>
-                      {acc.address}
-                    </option>
-                  ))}
+                  .map((acc) => {
+                    const accountIndex =
+                      accounts.findIndex((a) => a.address === acc.address) + 1;
+                    return (
+                      <option key={acc.address} value={acc.address}>
+                        Account {accountIndex}: {acc.address.slice(0, 8)}...
+                        {acc.address.slice(-4)} (Balance: {acc.balance} XRP)
+                      </option>
+                    );
+                  })}
               </select>
+              {accounts.filter((acc) => acc.address !== account?.address)
+                .length === 0 && (
+                <p className="text-xs text-yellow-600 mt-1">
+                  No other accounts available. Generate more accounts or enter
+                  address manually below.
+                </p>
+              )}
               {errors.destination && (
                 <p className="text-xs text-red-600 mt-1">
                   {errors.destination}
                 </p>
               )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Or Enter Address Manually
+              </label>
+              <input
+                type="text"
+                value={formData.destination}
+                onChange={(e) => updateFormData("destination", e.target.value)}
+                className="input-field text-gray-700 w-full border border-gray-500 p-2"
+                placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter a valid XRPL address if not in the dropdown above
+              </p>
             </div>
 
             <div>
