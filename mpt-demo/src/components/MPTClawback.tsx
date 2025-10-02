@@ -76,7 +76,6 @@ const MPTClawback: React.FC<MPTClawbackProps> = ({
       const transaction: any = {
         TransactionType: "Clawback",
         Account: account.address,
-        MPTokenIssuanceID: formData.mptIssuanceId,
         Amount: {
           mpt_issuance_id: formData.mptIssuanceId,
           value: formData.amount,
