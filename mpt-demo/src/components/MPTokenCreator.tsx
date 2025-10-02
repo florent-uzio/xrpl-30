@@ -424,7 +424,7 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
               <textarea
                 value={formData.metadata}
                 onChange={(e) => updateFormData("metadata", e.target.value)}
-                className="input-field h-48 font-mono text-sm border border-gray-500 p-2 text-gray-700 w-full"
+                className="input-field font-mono text-sm border border-gray-500 p-2 text-gray-700 w-full h-96"
                 placeholder="Enter JSON metadata..."
               />
               <p className="text-xs text-gray-700 mt-1">
