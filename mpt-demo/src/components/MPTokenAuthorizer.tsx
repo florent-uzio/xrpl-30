@@ -181,7 +181,7 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
                   />
                   <div className="flex items-center space-x-2">
                     <UserPlus className="w-4 h-4 text-green-600" />
-                    <span>Authorize</span>
+                    <span className="text-gray-900">Authorize</span>
                   </div>
                 </label>
                 <label className="flex items-center space-x-3">
@@ -196,7 +196,7 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
                   />
                   <div className="flex items-center space-x-2">
                     <UserMinus className="w-4 h-4 text-red-600" />
-                    <span>Unauthorize</span>
+                    <span className="text-gray-900">Unauthorize</span>
                   </div>
                 </label>
               </div>

@@ -61,7 +61,18 @@
 - Highlight the issuer authority requirements
 - Show when clawback is useful (fraud prevention, error recovery)
 
-### 6. Visualization (2 minutes)
+### 6. MPT Lock/Unlock (2 minutes)
+
+- Switch to "Lock/Unlock" tab
+- Show how issuers can lock MPT balances to prevent transfers
+- Demonstrate locking an MPT (tfMPTLock flag = 1)
+- Show how locked tokens cannot be transferred
+- Demonstrate unlocking an MPT (tfMPTUnlock flag = 2)
+- Explain the optional Holder field for specific account targeting
+- Show the MPTokenIssuanceSet transaction structure
+- Highlight use cases: compliance, security, emergency stops
+
+### 7. Visualization (2 minutes)
 
 - Switch to "Visualize" tab
 - Click "Start" to begin animation
@@ -69,7 +80,7 @@
 - Explain the different capabilities
 - Highlight the feature cards
 
-### 7. Advanced Features (1-2 minutes)
+### 8. Advanced Features (1-2 minutes)
 
 - Show different flag combinations
 - Demonstrate restricted tokens (Require Auth)
@@ -91,18 +102,20 @@
 - "MPTs are more flexible than traditional tokens"
 - "Six different flags for fine-grained control"
 - "Built-in transfer fees for issuers"
+- "Lock/unlock functionality for compliance and security"
 - "Rich metadata support"
 - "Authorization system for compliance"
 - "Direct payment transfers between accounts"
 - "Issuer clawback capabilities for compliance"
+- "Lock/unlock functionality for emergency controls"
 
 ### Use Cases
 
 - **Stablecoins**: Can Transfer + Can Trade
-- **Securities**: Require Auth + Can Clawback
+- **Securities**: Require Auth + Can Clawback + Can Lock
 - **Rewards**: Can Lock + Can Escrow
 - **Utility Tokens**: Can Transfer + Can Trade
-- **Compliance Tokens**: All flags enabled
+- **Compliance Tokens**: All flags enabled + Lock/Unlock controls
 
 ## Conclusion (30 seconds)
 

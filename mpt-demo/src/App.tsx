@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Client } from "xrpl";
-import { Plus, Shield, Trash2, Play, Send, DollarSign } from "lucide-react";
+import {
+  Plus,
+  Shield,
+  Trash2,
+  Play,
+  Send,
+  DollarSign,
+  Lock,
+} from "lucide-react";
 
 // Components
 import AccountManager from "./components/AccountManager";
@@ -10,6 +18,7 @@ import MPTokenAuthorizer from "./components/MPTokenAuthorizer";
 import MPTokenDestroyer from "./components/MPTokenDestroyer";
 import MPTPayment from "./components/MPTPayment";
 import MPTClawback from "./components/MPTClawback";
+import MPTokenLocker from "./components/MPTokenLocker";
 import TransactionViewer from "./components/TransactionViewer";
 import MPTokenVisualizer from "./components/MPTokenVisualizer";
 
@@ -49,7 +58,8 @@ function App() {
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [createdMPTs, setCreatedMPTs] = useState<CreatedMPT[]>([]);
   const [activeTab, setActiveTab] = useState<
-    "create" | "authorize" | "destroy" | "payment" | "clawback" | "visualize"
+    "create" | "authorize" | "destroy" | "payment" | "clawback" | "lock"
+    //  "visualize"
   >("create");
   const [isConnected, setIsConnected] = useState(false);
   const [transactionJson, setTransactionJson] = useState<string>("");
@@ -120,7 +130,8 @@ function App() {
     { id: "destroy", label: "Destroy", icon: Trash2 },
     { id: "payment", label: "Send Payment", icon: Send },
     { id: "clawback", label: "Clawback", icon: DollarSign },
-    { id: "visualize", label: "Visualize", icon: Play },
+    { id: "lock", label: "Lock/Unlock", icon: Lock },
+    // { id: "visualize", label: "Visualize", icon: Play },
   ] as const;
 
   return (
@@ -315,7 +326,27 @@ function App() {
                     </motion.div>
                   )}
 
-                  {activeTab === "visualize" && (
+                  {activeTab === "lock" && (
+                    <motion.div
+                      key="lock"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <MPTokenLocker
+                        client={client}
+                        account={selectedAccount}
+                        accounts={accounts}
+                        createdMPTs={createdMPTs}
+                        onTransactionCreated={handleTransactionCreated}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                      />
+                    </motion.div>
+                  )}
+
+                  {/* {activeTab === "visualize" && (
                     <motion.div
                       key="visualize"
                       initial={{ opacity: 0, y: 20 }}
@@ -328,7 +359,7 @@ function App() {
                         selectedAccount={selectedAccount}
                       />
                     </motion.div>
-                  )}
+                  )} */}
                 </AnimatePresence>
               </div>
             </div>
