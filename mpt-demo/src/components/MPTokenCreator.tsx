@@ -12,6 +12,7 @@ import {
   DollarSign,
   HandCoins,
   AlertTriangle,
+  ExternalLink,
 } from "lucide-react";
 import TransactionTracker from "../utils/transactionTracker";
 
@@ -40,6 +41,28 @@ interface MPTFlags {
   tfMPTCanClawback: boolean; // 0x00000040 (64)
 }
 
+const JSON_METADATA = {
+  currency: "FLUSD",
+  name: "Florent USD",
+  desc: "A regulated stablecoin issued by Florent.",
+  icon: "https://unsplash.com/photos/a-toy-rocket-is-flying-over-a-pile-of-pink-blocks-zUweo75uccw",
+  asset_class: "rwa",
+  asset_subclass: "stablecoin",
+  acct_name: "Florent",
+  weblinks: [
+    {
+      url: "https://florent.com/",
+      type: "website",
+      title: "Official Website",
+    },
+    {
+      url: "https://flo.org/",
+      type: "docs",
+      title: "My Documentation",
+    },
+  ],
+};
+
 const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
   client,
   account,
@@ -52,30 +75,7 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
     assetScale: 2,
     transferFee: 0,
     maximumAmount: "1000000",
-    metadata: JSON.stringify(
-      {
-        ticker: "DEMO",
-        name: "Demo Token",
-        desc: "A demonstration Multi-Purpose Token",
-        icon: "https://example.com/icon.png",
-        asset_class: "demo",
-        asset_subclass: "test",
-        issuer_name: "Demo Issuer",
-        urls: [
-          {
-            url: "https://example.com",
-            type: "website",
-            title: "Demo Website",
-          },
-        ],
-        additional_info: {
-          purpose: "Demonstration",
-          features: ["Transferable", "Tradeable"],
-        },
-      },
-      null,
-      2
-    ),
+    metadata: JSON.stringify(JSON_METADATA, null, 2),
   });
 
   const [flags, setFlags] = useState<MPTFlags>({
@@ -251,30 +251,7 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
         assetScale: 2,
         transferFee: 0,
         maximumAmount: "1000000",
-        metadata: JSON.stringify(
-          {
-            ticker: "DEMO",
-            name: "Demo Token",
-            desc: "A demonstration Multi-Purpose Token",
-            icon: "https://example.com/icon.png",
-            asset_class: "demo",
-            asset_subclass: "test",
-            issuer_name: "Demo Issuer",
-            urls: [
-              {
-                url: "https://example.com",
-                type: "website",
-                title: "Demo Website",
-              },
-            ],
-            additional_info: {
-              purpose: "Demonstration",
-              features: ["Transferable", "Tradeable"],
-            },
-          },
-          null,
-          2
-        ),
+        metadata: JSON.stringify(JSON_METADATA, null, 2),
       });
     } catch (error) {
       console.error("Failed to create MPToken:", error);
@@ -433,8 +410,16 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
             </h3>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                JSON Metadata
+              <label className="text-sm font-medium text-gray-700 mb-2 flex items-center space-x-2">
+                <span>JSON Metadata</span>
+                <a
+                  href="https://github.com/XRPLF/XRPL-Standards/discussions/264"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 flex items-center space-x-2"
+                >
+                  <ExternalLink className="w-4 h-4" /> <span>XLS-89</span>
+                </a>
               </label>
               <textarea
                 value={formData.metadata}
