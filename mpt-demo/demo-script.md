@@ -72,13 +72,16 @@
 - Show the MPTokenIssuanceSet transaction structure
 - Highlight use cases: compliance, security, emergency stops
 
-### 7. Visualization (2 minutes)
+### 7. Transaction History (2 minutes)
 
-- Switch to "Visualize" tab
-- Click "Start" to begin animation
-- Show the beautiful token transfer animation
-- Explain the different capabilities
-- Highlight the feature cards
+- Switch to "History" tab
+- Show all transactions from the session
+- Demonstrate search and filtering capabilities
+- Show transaction details: source account, type, hash, validation status
+- Demonstrate copy-to-clipboard functionality for transaction hashes
+- Show external link to XRPL Explorer
+- Explain the persistent storage across sessions
+- Highlight the real-time updates as new transactions are created
 
 ### 8. Advanced Features (1-2 minutes)
 
@@ -86,6 +89,7 @@
 - Demonstrate restricted tokens (Require Auth)
 - Show transfer fee implications
 - Explain real-world use cases
+- Highlight transaction tracking and history features
 
 ## Key Talking Points
 
@@ -96,6 +100,8 @@
 - "TypeScript for type safety"
 - "Framer Motion for smooth animations"
 - "Tailwind CSS for beautiful design"
+- "Persistent transaction history with localStorage"
+- "Real-time transaction tracking and updates"
 
 ### MPT Capabilities
 

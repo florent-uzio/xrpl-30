@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Client, Wallet } from "xrpl";
 import { Trash2, AlertTriangle } from "lucide-react";
+import TransactionTracker from "../utils/transactionTracker";
 
 interface Account {
   address: string;
@@ -74,6 +75,20 @@ const MPTokenDestroyer: React.FC<MPTokenDestroyerProps> = ({
 
       const result = await client.submitAndWait(signed.tx_blob);
       console.log("MPToken destroyed successfully:", result);
+
+      // Track the transaction
+      const tracker = TransactionTracker.getInstance();
+      tracker.addTransaction(
+        account.address,
+        "MPTokenIssuanceDestroy",
+        result.result.hash || "",
+        true,
+        result.result.ledger_index,
+        transaction.Fee,
+        typeof result.result.meta === "object" && result.result.meta
+          ? (result.result.meta as any).TransactionResult
+          : undefined
+      );
 
       // Reset form
       setSelectedMPT("");

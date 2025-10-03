@@ -5,10 +5,10 @@ import {
   Plus,
   Shield,
   Trash2,
-  Play,
   Send,
   DollarSign,
   Lock,
+  History,
 } from "lucide-react";
 
 // Components
@@ -20,7 +20,7 @@ import MPTPayment from "./components/MPTPayment";
 import MPTClawback from "./components/MPTClawback";
 import MPTokenLocker from "./components/MPTokenLocker";
 import TransactionViewer from "./components/TransactionViewer";
-import MPTokenVisualizer from "./components/MPTokenVisualizer";
+import TransactionHistory from "./components/TransactionHistory";
 
 // Types
 interface MPToken {
@@ -58,7 +58,13 @@ function App() {
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [createdMPTs, setCreatedMPTs] = useState<CreatedMPT[]>([]);
   const [activeTab, setActiveTab] = useState<
-    "create" | "authorize" | "destroy" | "payment" | "clawback" | "lock"
+    | "create"
+    | "authorize"
+    | "destroy"
+    | "payment"
+    | "clawback"
+    | "lock"
+    | "history"
     //  "visualize"
   >("create");
   const [isConnected, setIsConnected] = useState(false);
@@ -131,6 +137,7 @@ function App() {
     { id: "payment", label: "Send Payment", icon: Send },
     { id: "clawback", label: "Clawback", icon: DollarSign },
     { id: "lock", label: "Lock/Unlock", icon: Lock },
+    { id: "history", label: "History", icon: History },
     // { id: "visualize", label: "Visualize", icon: Play },
   ] as const;
 
@@ -343,6 +350,18 @@ function App() {
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
                       />
+                    </motion.div>
+                  )}
+
+                  {activeTab === "history" && (
+                    <motion.div
+                      key="history"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <TransactionHistory />
                     </motion.div>
                   )}
 

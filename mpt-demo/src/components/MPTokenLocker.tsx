@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Client, Wallet } from "xrpl";
 import { Lock, Unlock, AlertTriangle, Shield } from "lucide-react";
+import TransactionTracker from "../utils/transactionTracker";
 
 interface Account {
   address: string;
@@ -86,6 +87,20 @@ const MPTokenLocker: React.FC<MPTokenLockerProps> = ({
 
       const result = await client.submitAndWait(signed.tx_blob);
       console.log(`MPT ${formData.action} successful:`, result);
+
+      // Track the transaction
+      const tracker = TransactionTracker.getInstance();
+      tracker.addTransaction(
+        account.address,
+        "MPTokenIssuanceSet",
+        result.result.hash || "",
+        true,
+        result.result.ledger_index,
+        transaction.Fee,
+        typeof result.result.meta === "object" && result.result.meta
+          ? (result.result.meta as any).TransactionResult
+          : undefined
+      );
 
       // Reset form
       setFormData({

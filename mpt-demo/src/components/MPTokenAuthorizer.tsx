@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Client, Wallet } from "xrpl";
 import { Shield, UserPlus, UserMinus, AlertTriangle } from "lucide-react";
+import TransactionTracker from "../utils/transactionTracker";
 
 interface Account {
   address: string;
@@ -90,6 +91,20 @@ const MPTokenAuthorizer: React.FC<MPTokenAuthorizerProps> = ({
 
       const result = await client.submitAndWait(signed.tx_blob);
       console.log("MPToken authorization successful:", result);
+
+      // Track the transaction
+      const tracker = TransactionTracker.getInstance();
+      tracker.addTransaction(
+        account.address,
+        "MPTokenAuthorize",
+        result.result.hash || "",
+        true,
+        result.result.ledger_index,
+        transaction.Fee,
+        typeof result.result.meta === "object" && result.result.meta
+          ? (result.result.meta as any).TransactionResult
+          : undefined
+      );
     } catch (error) {
       console.error("Failed to authorize MPToken:", error);
       setErrors({

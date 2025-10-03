@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Client, Wallet, type Payment } from "xrpl";
 import { Send, AlertTriangle, Coins } from "lucide-react";
+import TransactionTracker from "../utils/transactionTracker";
 
 interface Account {
   address: string;
@@ -118,6 +119,20 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
 
       const result = await client.submitAndWait(signed.tx_blob);
       console.log("MPT Payment successful:", result);
+
+      // Track the transaction
+      const tracker = TransactionTracker.getInstance();
+      tracker.addTransaction(
+        account.address,
+        "Payment",
+        result.result.hash || "",
+        true,
+        result.result.ledger_index,
+        transaction.Fee,
+        typeof result.result.meta === "object" && result.result.meta
+          ? (result.result.meta as any).TransactionResult
+          : undefined
+      );
 
       // Reset form
       setFormData({

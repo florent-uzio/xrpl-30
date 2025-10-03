@@ -13,6 +13,7 @@ import {
   HandCoins,
   AlertTriangle,
 } from "lucide-react";
+import TransactionTracker from "../utils/transactionTracker";
 
 interface Account {
   address: string;
@@ -218,6 +219,20 @@ const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({
       const result = await client.submitAndWait(signed.tx_blob);
 
       console.log("MPToken created successfully:", result);
+
+      // Track the transaction
+      const tracker = TransactionTracker.getInstance();
+      tracker.addTransaction(
+        account.address,
+        "MPTokenIssuanceCreate",
+        result.result.hash || "",
+        true,
+        result.result.ledger_index,
+        transaction.Fee,
+        typeof result.result.meta === "object" && result.result.meta
+          ? (result.result.meta as any).TransactionResult
+          : undefined
+      );
 
       // Extract MPT issuance ID from the result
       if (
