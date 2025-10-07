@@ -341,7 +341,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = () => {
                   <button
                     onClick={() =>
                       window.open(
-                        `https://testnet.xrpl.org/transactions/${tx.hash}`,
+                        `https://devnet.xrpl.org/transactions/${tx.hash}`,
                         "_blank"
                       )
                     }
