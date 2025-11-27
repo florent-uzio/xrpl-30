@@ -41,6 +41,7 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
   const [formData, setFormData] = useState({
     mptIssuanceId: "",
     amount: "",
+    sendMax: undefined,
     destination: "",
     destinationTag: "",
     invoiceId: "",
@@ -60,6 +61,10 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
 
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
       newErrors.amount = "Please enter a valid amount";
+    }
+
+    if (formData.sendMax && parseFloat(formData.sendMax) <= 0) {
+      newErrors.sendMax = "Please enter a valid send max";
     }
 
     if (!formData.destination) {
@@ -89,6 +94,12 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
           mpt_issuance_id: formData.mptIssuanceId,
           value: formData.amount,
         },
+        SendMax: formData.sendMax
+          ? {
+              mpt_issuance_id: formData.mptIssuanceId,
+              value: formData.sendMax,
+            }
+          : undefined,
         // DeliverMax: {
         //   mpt_issuance_id: formData.mptIssuanceId,
         //   value: formData.amount,
@@ -138,6 +149,7 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
       setFormData({
         mptIssuanceId: "",
         amount: "",
+        sendMax: undefined,
         destination: "",
         destinationTag: "",
         invoiceId: "",
@@ -261,6 +273,22 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
               />
               {errors.amount && (
                 <p className="text-xs text-red-600 mt-1">{errors.amount}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Send Max
+              </label>
+              <input
+                type="text"
+                value={formData.sendMax}
+                onChange={(e) => updateFormData("sendMax", e.target.value)}
+                className="input-field text-gray-700 w-full border border-gray-500 p-2"
+                placeholder="100"
+              />
+              {errors.sendMax && (
+                <p className="text-xs text-red-600 mt-1">{errors.sendMax}</p>
               )}
             </div>
 
