@@ -4,6 +4,31 @@ import { Client, Wallet, type Payment } from "xrpl";
 import { Send, AlertTriangle, Coins } from "lucide-react";
 import TransactionTracker from "../utils/transactionTracker";
 
+// Payment flags as defined in XRPL documentation
+const PAYMENT_FLAGS = {
+  tfNoRippleDirect: {
+    value: 0x00010000,
+    decimal: 65536,
+    name: "tfNoRippleDirect",
+    description:
+      "Do not use the default path; only use paths included in the Paths field",
+  },
+  tfPartialPayment: {
+    value: 0x00020000,
+    decimal: 131072,
+    name: "tfPartialPayment",
+    description:
+      "Reduce the received amount instead of failing if Amount cannot be sent without spending more than SendMax",
+  },
+  tfLimitQuality: {
+    value: 0x00040000,
+    decimal: 262144,
+    name: "tfLimitQuality",
+    description:
+      "Only take paths where all conversions have an input:output ratio equal or better than Amount:SendMax",
+  },
+};
+
 interface Account {
   address: string;
   secret: string;
@@ -46,7 +71,19 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
     destinationTag: "",
     invoiceId: "",
   });
+  const [selectedFlags, setSelectedFlags] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const calculateFlags = (): number => {
+    let flags = 0;
+    selectedFlags.forEach((flagName) => {
+      const flag = PAYMENT_FLAGS[flagName as keyof typeof PAYMENT_FLAGS];
+      if (flag) {
+        flags |= flag.value;
+      }
+    });
+    return flags;
+  };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -109,7 +146,7 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
         //   value: formData.amount,
         // },
         Fee: "120",
-        Flags: 0,
+        Flags: calculateFlags(),
       };
 
       // Add optional fields if provided
@@ -154,6 +191,7 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
         destinationTag: "",
         invoiceId: "",
       });
+      setSelectedFlags(new Set());
     } catch (error) {
       console.error("Failed to send MPT payment:", error);
       setErrors({
@@ -170,6 +208,18 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
       ...prev,
       [field]: value,
     }));
+  };
+
+  const toggleFlag = (flagName: string) => {
+    setSelectedFlags((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(flagName)) {
+        newSet.delete(flagName);
+      } else {
+        newSet.add(flagName);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -376,6 +426,51 @@ const MPTPayment: React.FC<MPTPaymentProps> = ({
                 className="input-field text-gray-700 w-full border border-gray-500 p-2"
                 placeholder="Hex string (64 characters)"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Payment Flags (Optional)
+              </label>
+              <div className="space-y-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                {Object.entries(PAYMENT_FLAGS).map(([key, flag]) => (
+                  <label
+                    key={key}
+                    className="flex items-start space-x-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedFlags.has(key)}
+                      onChange={() => toggleFlag(key)}
+                      className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {flag.name}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          (0x
+                          {flag.value
+                            .toString(16)
+                            .toUpperCase()
+                            .padStart(8, "0")}{" "}
+                          / {flag.decimal})
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {flag.description}
+                      </p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+              {selectedFlags.size > 0 && (
+                <p className="text-xs text-gray-600 mt-2">
+                  <strong>Calculated Flags Value:</strong> {calculateFlags()}{" "}
+                  (0x{calculateFlags().toString(16).toUpperCase()})
+                </p>
+              )}
             </div>
           </div>
         </div>
