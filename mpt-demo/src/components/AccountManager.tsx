@@ -168,7 +168,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
         </div>
 
         <p className="text-sm text-gray-600 mb-4">
-          Generate testnet accounts with XRP from the faucet to manage MPTs.
+          Generate devnet accounts with XRP from the faucet to manage MPTs.
         </p>
 
         {createdMPTs.length > 0 && (

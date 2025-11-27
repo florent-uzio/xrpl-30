@@ -6,7 +6,7 @@ A modern, interactive web application for managing Multi-Purpose Tokens on the X
 
 ### 🏦 Account Management
 
-- Generate testnet accounts with XRP from the faucet
+- Generate devnet accounts with XRP from the faucet
 - View account balances and details
 - Copy addresses and secret keys
 - Manage multiple accounts
