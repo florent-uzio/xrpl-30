@@ -17,6 +17,7 @@ import {
   CheckCircle,
   XCircle,
   Loader,
+  ExternalLink,
 } from "lucide-react";
 
 interface Account {
@@ -94,9 +95,32 @@ const TokenIssuer: React.FC<TokenIssuerProps> = ({
     maximumAmount: "1000000",
     metadata: JSON.stringify(
       {
-        currency: "RLUSD",
-        name: "Regulated USD",
-        desc: "A regulated stablecoin",
+        t: "TBILL",
+        n: "T-Bill Yield Token",
+        d: "A yield-bearing stablecoin backed by short-term U.S. Treasuries and money market instruments.",
+        i: "example.org/tbill-icon.png",
+        ac: "rwa",
+        as: "treasury",
+        in: "Example Yield Co.",
+        us: [
+          {
+            u: "exampleyield.co/tbill",
+            c: "website",
+            t: "Product Page",
+          },
+          {
+            u: "exampleyield.co/docs",
+            c: "docs",
+            t: "Yield Token Docs",
+          },
+        ],
+        ai: {
+          interest_rate: "5.00%",
+          interest_type: "variable",
+          yield_source: "U.S. Treasury Bills",
+          maturity_date: "2045-06-30",
+          cusip: "912796RX0",
+        },
       },
       null,
       2
@@ -302,7 +326,7 @@ const TokenIssuer: React.FC<TokenIssuerProps> = ({
           id: Date.now().toString(),
           type: "MPT",
           issuer: account.address,
-          currency: metadata.currency || "MPT",
+          currency: metadata.t || "MPT",
           name: metadata.name,
           createdAt: new Date(),
           mptIssuanceId,
@@ -680,16 +704,39 @@ const TokenIssuer: React.FC<TokenIssuerProps> = ({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Metadata (JSON)
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Metadata (JSON) - XLS-0089 Format
+              </label>
+              <a
+                href="https://github.com/XRPLF/XRPL-Standards/tree/master/XLS-0089-multi-purpose-token-metadata-schema#32-json-metadata-example"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 text-sm"
+                title="View XLS-0089 Specification"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>XLS-0089 Spec</span>
+              </a>
+            </div>
+            <div className="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-xs text-blue-800 mb-1">
+                <strong>Required fields:</strong> ticker, name, icon,
+                asset_class, issuer_name
+              </p>
+              <p className="text-xs text-blue-700">
+                <strong>Optional:</strong> desc, asset_subclass (required if
+                asset_class is "rwa"), uris, additional_info
+              </p>
+            </div>
             <textarea
               value={mptFormData.metadata}
               onChange={(e) =>
                 setMptFormData({ ...mptFormData, metadata: e.target.value })
               }
-              rows={8}
+              rows={12}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+              placeholder='{\n  "ticker": "RLUSD",\n  "name": "Regulated USD",\n  "desc": "A regulated stablecoin",\n  "icon": "https://example.com/icon.png",\n  "asset_class": "currency",\n  "issuer_name": "Example Issuer"\n}'
             />
             {errors.metadata && (
               <p className="text-red-500 text-xs mt-1">{errors.metadata}</p>
