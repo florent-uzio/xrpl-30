@@ -42,25 +42,32 @@ interface MPTFlags {
 }
 
 const JSON_METADATA = {
-  currency: "FLUSD",
-  name: "Florent USD",
-  desc: "A regulated stablecoin issued by Florent.",
-  icon: "https://unsplash.com/photos/a-toy-rocket-is-flying-over-a-pile-of-pink-blocks-zUweo75uccw",
-  asset_class: "rwa",
-  asset_subclass: "stablecoin",
-  acct_name: "Florent",
-  weblinks: [
+  t: "TBILL",
+  n: "T-Bill Yield Token",
+  d: "A yield-bearing stablecoin backed by short-term U.S. Treasuries and money market instruments.",
+  i: "example.org/tbill-icon.png",
+  ac: "rwa",
+  as: "treasury",
+  in: "Example Yield Co.",
+  us: [
     {
-      url: "https://florent.com/",
-      type: "website",
-      title: "Official Website",
+      u: "exampleyield.co/tbill",
+      c: "website",
+      t: "Product Page",
     },
     {
-      url: "https://flo.org/",
-      type: "docs",
-      title: "My Documentation",
+      u: "exampleyield.co/docs",
+      c: "docs",
+      t: "Yield Token Docs",
     },
   ],
+  ai: {
+    interest_rate: "5.00%",
+    interest_type: "variable",
+    yield_source: "U.S. Treasury Bills",
+    maturity_date: "2045-06-30",
+    cusip: "912796RX0",
+  },
 };
 
 const MPTokenCreator: React.FC<MPTokenCreatorProps> = ({

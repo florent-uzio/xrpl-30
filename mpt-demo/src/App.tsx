@@ -49,8 +49,8 @@ interface Account {
   mptokens: MPToken[];
 }
 
-// const TESTNET_URL = "wss://s.altnet.rippletest.net:51233";
-const DEVNET_URL = "wss://s.devnet.rippletest.net:51233";
+const TESTNET_URL = "wss://s.altnet.rippletest.net:51233";
+// const DEVNET_URL = "wss://s.devnet.rippletest.net:51233";
 
 function App() {
   const [client, setClient] = useState<Client | null>(null);
@@ -75,7 +75,7 @@ function App() {
   useEffect(() => {
     const initClient = async () => {
       try {
-        const xrplClient = new Client(DEVNET_URL);
+        const xrplClient = new Client(TESTNET_URL);
         await xrplClient.connect();
         setClient(xrplClient);
         setIsConnected(true);
