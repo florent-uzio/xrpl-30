@@ -10,7 +10,11 @@ interface AccountCardProps {
   account: XRPLAccount;
   client: Client;
   onDelete: (address: string) => void;
-  onBalanceUpdate?: (address: string, balance: string, sequence: number) => void;
+  onBalanceUpdate?: (
+    address: string,
+    balance: string,
+    sequence: number,
+  ) => void;
   isSelected?: boolean;
   onSelect?: () => void;
 }
@@ -25,10 +29,12 @@ export const AccountCard = ({
 }: AccountCardProps) => {
   const [copied, setCopied] = useState(false);
 
-  const { data: accountInfo, isLoading, isFetching, refetch } = useAccountInfo(
-    client,
-    account.address
-  );
+  const {
+    data: accountInfo,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useAccountInfo(client, account.address);
 
   // Use the latest data from the query, or fall back to the stored account data
   const displayBalance = accountInfo?.balance ?? account.balance;
@@ -37,7 +43,11 @@ export const AccountCard = ({
   // Update parent component when fresh data arrives
   useEffect(() => {
     if (accountInfo && onBalanceUpdate) {
-      onBalanceUpdate(account.address, accountInfo.balance, accountInfo.sequence);
+      onBalanceUpdate(
+        account.address,
+        accountInfo.balance,
+        accountInfo.sequence,
+      );
     }
   }, [accountInfo, onBalanceUpdate, account.address]);
 
@@ -61,12 +71,12 @@ export const AccountCard = ({
           ? "ring-2 ring-cyber-blue shadow-lg shadow-cyber-blue/20"
           : ""
       }`}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: "pointer" }}
       onClick={onSelect}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onSelect?.();
         }
@@ -76,7 +86,7 @@ export const AccountCard = ({
 
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-cyber-blue/20 to-cyber-purple/20 rounded-lg">
+          <div className="p-3 bg-linear-to-br from-cyber-blue/20 to-cyber-purple/20 rounded-lg">
             <Wallet className="w-6 h-6 text-cyber-blue" />
           </div>
           <div>
@@ -150,7 +160,9 @@ export const AccountCard = ({
             Balance
           </span>
           <div className="text-right">
-            <div className={`text-2xl font-display font-bold glow-text ${isLoading ? 'animate-pulse' : ''}`}>
+            <div
+              className={`text-2xl font-display font-bold glow-text ${isLoading ? "animate-pulse" : ""}`}
+            >
               {parseFloat(displayBalance).toFixed(2)}
             </div>
             <div className="text-xs text-gray-500 font-display">XRP</div>
@@ -162,7 +174,9 @@ export const AccountCard = ({
             <span className="text-xs text-gray-400 uppercase tracking-wider font-display">
               Sequence
             </span>
-            <span className={`text-sm font-display text-gray-300 ${isLoading ? 'animate-pulse' : ''}`}>
+            <span
+              className={`text-sm font-display text-gray-300 ${isLoading ? "animate-pulse" : ""}`}
+            >
               #{displaySequence}
             </span>
           </div>

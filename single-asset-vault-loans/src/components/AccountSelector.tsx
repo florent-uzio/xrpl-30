@@ -51,10 +51,13 @@ export const AccountSelector = ({
             </div>
             <div className="text-left">
               <div className="text-sm font-display text-gray-300">
-                {shortenAddress(selectedAccount.address, 8)}
+                {selectedAccount.label ||
+                  shortenAddress(selectedAccount.address, 8)}
               </div>
               <div className="text-xs text-gray-500 font-display">
-                {parseFloat(selectedAccount.balance).toFixed(2)} XRP
+                {selectedAccount.label
+                  ? `${shortenAddress(selectedAccount.address, 6)} • ${parseFloat(selectedAccount.balance).toFixed(2)} XRP`
+                  : `${parseFloat(selectedAccount.balance).toFixed(2)} XRP`}
               </div>
             </div>
           </div>
@@ -79,7 +82,8 @@ export const AccountSelector = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-50 w-full mt-2 cyber-card p-2 max-h-64 overflow-y-auto"
+            className="absolute z-[100] w-full mt-2 cyber-card p-2 max-h-64 overflow-y-auto scrollbar-thin"
+            style={{ position: "absolute" }}
           >
             {accounts.length === 0 ? (
               <div className="p-4 text-center text-gray-500 font-display text-sm">
@@ -101,10 +105,12 @@ export const AccountSelector = ({
                     </div>
                     <div className="text-left">
                       <div className="text-sm font-display text-gray-300">
-                        {shortenAddress(account.address, 8)}
+                        {account.label || shortenAddress(account.address, 8)}
                       </div>
                       <div className="text-xs text-gray-500 font-display">
-                        {parseFloat(account.balance).toFixed(2)} XRP
+                        {account.label
+                          ? shortenAddress(account.address, 8)
+                          : `${parseFloat(account.balance).toFixed(2)} XRP`}
                       </div>
                     </div>
                   </div>

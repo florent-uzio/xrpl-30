@@ -6,4 +6,5 @@ export interface XRPLAccount {
   balance: string;
   sequence?: number;
   createdAt: number;
+  label?: string;
 }

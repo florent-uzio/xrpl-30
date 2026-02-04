@@ -46,3 +46,15 @@ export const updateAccountBalance = (
   saveAccounts(updated);
   return updated;
 };
+
+export const updateAccountLabel = (
+  address: string,
+  label: string,
+): XRPLAccount[] => {
+  const accounts = loadAccounts();
+  const updated = accounts.map((acc) =>
+    acc.address === address ? { ...acc, label } : acc,
+  );
+  saveAccounts(updated);
+  return updated;
+};

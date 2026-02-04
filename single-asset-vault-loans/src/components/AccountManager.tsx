@@ -61,49 +61,33 @@ export const AccountManager = ({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-display font-bold glow-text mb-2">
-            Account Manager
-          </h2>
-          <p className="text-sm text-gray-400 font-display">
-            Create and manage XRPL accounts on devnet
-          </p>
-        </div>
-
-        <button
-          onClick={createAccount}
-          disabled={isCreating}
-          className="cyber-button flex items-center gap-2"
-        >
-          {isCreating ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Creating...</span>
-            </>
-          ) : (
-            <>
-              <Plus className="w-4 h-4" />
-              <span>New Account</span>
-            </>
-          )}
-        </button>
-      </div>
+    <div className="space-y-3">
+      <button
+        onClick={createAccount}
+        disabled={isCreating}
+        className="w-full cyber-button flex items-center justify-center gap-2 text-sm py-2.5"
+      >
+        {isCreating ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Creating...</span>
+          </>
+        ) : (
+          <>
+            <Plus className="w-4 h-4" />
+            <span>New Account</span>
+          </>
+        )}
+      </button>
 
       {error && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3"
+          className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-2"
         >
-          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <div className="text-sm font-display font-medium text-red-400">
-              Error
-            </div>
-            <div className="text-sm text-red-300/80 mt-1">{error}</div>
-          </div>
+          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="text-xs font-display text-red-300">{error}</div>
         </motion.div>
       )}
 
@@ -112,9 +96,9 @@ export const AccountManager = ({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
-          className="p-4 bg-cyber-green/10 border border-cyber-green/30 rounded-lg"
+          className="p-3 bg-cyber-green/10 border border-cyber-green/30 rounded-lg"
         >
-          <div className="text-sm font-display text-cyber-green">
+          <div className="text-xs font-display text-cyber-green">
             {successMessage}
           </div>
         </motion.div>
@@ -124,21 +108,21 @@ export const AccountManager = ({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="cyber-card p-6"
+          className="cyber-card p-3"
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-12 h-12 rounded-full border-2 border-cyber-blue/30 border-t-cyber-blue animate-spin" />
+              <div className="w-8 h-8 rounded-full border-2 border-cyber-blue/30 border-t-cyber-blue animate-spin" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-8 h-8 rounded-full bg-cyber-blue/20" />
+                <div className="w-5 h-5 rounded-full bg-cyber-blue/20" />
               </div>
             </div>
             <div>
-              <div className="text-sm font-display font-medium text-gray-200 mb-1">
+              <div className="text-xs font-display font-medium text-gray-200">
                 Generating account...
               </div>
-              <div className="text-xs text-gray-500 font-display">
-                Connecting to devnet faucet and funding wallet
+              <div className="text-[10px] text-gray-500 font-display">
+                Funding via devnet faucet
               </div>
             </div>
           </div>
