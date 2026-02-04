@@ -28,10 +28,15 @@ import { VaultCreate } from "./components/VaultCreate";
 import { VaultList } from "./components/VaultList";
 import { VaultDetail } from "./components/VaultDetail";
 import { VaultSet } from "./components/VaultSet";
+import { VaultDeposit } from "./components/VaultDeposit";
 import { LoanManager } from "./components/LoanManager";
 import { TransactionHistory } from "./components/TransactionHistory";
 
-type NavigationTab = "vaults" | "create-vault" | "loans" | "history";
+type NavigationTab =
+  | "vaults"
+  | "create-vault"
+  | "loans"
+  | "history";
 
 interface Transaction {
   hash: string;
@@ -449,6 +454,24 @@ function App() {
                   transition={{ duration: 0.2 }}
                 >
                   <VaultDetail client={client} account={selectedAccount} />
+                </motion.div>
+              }
+            />
+            <Route
+              path="/vaults/:vaultId/deposit"
+              element={
+                <motion.div
+                  key="vault-deposit"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <VaultDeposit
+                    client={client}
+                    account={selectedAccount}
+                    onTransactionSubmitted={handleTransactionSubmitted}
+                  />
                 </motion.div>
               }
             />

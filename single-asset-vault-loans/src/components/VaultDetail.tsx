@@ -132,13 +132,22 @@ export function VaultDetail({ client }: VaultDetailProps) {
             Comprehensive view of vault state and configuration
           </p>
         </div>
-        <button
-          onClick={() => navigate(`/vaults/${vaultId}/edit`)}
-          className="cyber-button flex items-center gap-2 px-4 py-2 cursor-pointer"
-        >
-          <Edit className="w-4 h-4" />
-          <span>Edit Vault</span>
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate(`/vaults/${vaultId}/deposit`)}
+            className="cyber-button flex items-center gap-2 px-4 py-2 cursor-pointer bg-gradient-to-r from-cyber-green to-cyan-500 hover:shadow-cyber-green/20"
+          >
+            <TrendingUp className="w-4 h-4" />
+            <span>Deposit</span>
+          </button>
+          <button
+            onClick={() => navigate(`/vaults/${vaultId}/edit`)}
+            className="cyber-button-secondary flex items-center gap-2 px-4 py-2 cursor-pointer"
+          >
+            <Edit className="w-4 h-4" />
+            <span>Edit</span>
+          </button>
+        </div>
       </div>
 
       {/* Vault ID Card */}

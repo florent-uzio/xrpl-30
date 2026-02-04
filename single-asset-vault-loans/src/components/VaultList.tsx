@@ -223,11 +223,11 @@ export function VaultList({ client, account }: VaultListProps) {
                       {vault.index}
                     </div>
                     <button
-                      onClick={(e) => handleCopyVaultId(vault.LedgerIndex, e)}
+                      onClick={(e) => handleCopyVaultId(vault.index, e)}
                       className="p-1 hover:bg-cyber-blue/10 rounded transition-colors flex-0"
                       title="Copy Vault ID"
                     >
-                      {copiedId === vault.LedgerIndex ? (
+                      {copiedId === vault.index ? (
                         <Check className="w-3 h-3 text-cyber-green" />
                       ) : (
                         <Copy className="w-3 h-3 text-gray-500 group-hover:text-cyber-blue transition-colors" />
