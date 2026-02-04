@@ -73,6 +73,19 @@ export function VaultDetail({ client }: VaultDetailProps) {
     return "XRP";
   };
 
+  const formatWithdrawalPolicy = (policy: number | undefined): string => {
+    if (!policy) return "Not Set";
+
+    const policies: Record<number, string> = {
+      1: "First Come First Serve",
+      // Future policies can be added here
+      // 2: "Pro Rata",
+      // 3: "Priority Based",
+    };
+
+    return policies[policy] || `Unknown (${policy})`;
+  };
+
   const handleCopy = async (text: string, fieldName: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -299,7 +312,7 @@ export function VaultDetail({ client }: VaultDetailProps) {
             <InfoField
               icon={<BarChart3 className="w-4 h-4" />}
               label="Withdrawal Policy"
-              value={vault.WithdrawalPolicy?.toString() || "0"}
+              value={formatWithdrawalPolicy(vault.WithdrawalPolicy)}
             />
           </div>
         </div>
