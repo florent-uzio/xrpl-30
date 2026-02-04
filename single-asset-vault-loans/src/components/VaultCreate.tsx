@@ -6,6 +6,8 @@ import {
   validate,
   type Currency,
   type VaultCreate,
+  encodeMPTokenMetadata,
+  type MPTokenMetadata,
 } from "xrpl";
 import { motion } from "framer-motion";
 import {
@@ -18,6 +20,7 @@ import {
   Code2,
   Copy,
   Check,
+  ExternalLink,
 } from "lucide-react";
 import { type XRPLAccount } from "../types/account";
 import { JSONViewer } from "./JSONViewer";
@@ -48,6 +51,8 @@ export function VaultCreate({
   const [domainId, setDomainId] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [isNonTransferable, setIsNonTransferable] = useState(false);
+  const [assetScale, setAssetScale] = useState("");
+  const [mptMetadata, setMptMetadata] = useState("");
 
   // Build transaction preview dynamically
   const transactionPreview = useMemo(() => {
@@ -106,6 +111,15 @@ export function VaultCreate({
     if (flags > 0) tx.Flags = flags;
     if (hexEncodedData) tx.Data = hexEncodedData;
     if (domainId) tx.DomainID = domainId;
+    if (assetScale) tx.AssetScale = parseInt(assetScale, 10);
+    if (mptMetadata) {
+      try {
+        const metadata = JSON.parse(mptMetadata);
+        tx.MPTokenMetadata = encodeMPTokenMetadata(metadata);
+      } catch {
+        // Invalid JSON, will show in preview
+      }
+    }
 
     // Note: These fields would be added during autofill
     // tx.Fee = "12";
@@ -123,6 +137,8 @@ export function VaultCreate({
     domainId,
     isPrivate,
     isNonTransferable,
+    assetScale,
+    mptMetadata,
   ]);
 
   const handleCopyJSON = async () => {
@@ -198,6 +214,11 @@ export function VaultCreate({
       if (flags > 0) tx.Flags = flags;
       if (data) tx.Data = convertStringToHex(data);
       if (domainId) tx.DomainID = domainId;
+      if (assetScale) tx.AssetScale = parseInt(assetScale, 10);
+      if (mptMetadata) {
+        const metadata = JSON.parse(mptMetadata);
+        tx.MPTokenMetadata = encodeMPTokenMetadata(metadata);
+      }
 
       // Create wallet from seed
       const wallet = Wallet.fromSeed(account.seed);
@@ -238,6 +259,8 @@ export function VaultCreate({
       setMptIssuanceId("");
       setIsPrivate(false);
       setIsNonTransferable(false);
+      setAssetScale("");
+      setMptMetadata("");
     } catch (err: any) {
       console.error("Failed to create vault:", err);
 
@@ -467,6 +490,102 @@ export function VaultCreate({
                 PermissionedDomain object ID for vault shares (requires Private
                 flag)
               </p>
+            </div>
+
+            {/* Asset Scale */}
+            <div>
+              <label className="block text-sm font-display font-medium text-gray-300 mb-2">
+                Asset Scale
+                <span className="text-gray-500 text-xs ml-2">(optional)</span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="19"
+                value={assetScale}
+                onChange={(e) => setAssetScale(e.target.value)}
+                placeholder="0"
+                className="cyber-input"
+              />
+              <p className="mt-1 text-xs text-gray-500 font-display">
+                Decimal places for vault share tokens (0-19). Default is 0.
+              </p>
+            </div>
+
+            {/* MPToken Metadata */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-display font-medium text-gray-300">
+                  MPToken Metadata
+                  <span className="text-gray-500 text-xs ml-2">(optional)</span>
+                </label>
+                <a
+                  href="https://xrpl.org/docs/concepts/tokens/fungible-tokens/multi-purpose-tokens#metadata-schema"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs font-display text-cyber-blue hover:text-cyber-purple transition-all cursor-pointer group"
+                  title="View XLS-89 Metadata Schema"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                  <span>Schema Reference</span>
+                  <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+              </div>
+              <textarea
+                value={mptMetadata}
+                onChange={(e) => setMptMetadata(e.target.value)}
+                placeholder={`{\n  "t": "VAULT",\n  "n": "My Vault Shares",\n  "i": "https://example.com/icon.png",\n  "d": "Shares for my XRP vault",\n  "ac": "defi"\n}`}
+                rows={8}
+                className="cyber-input resize-none font-mono text-xs"
+              />
+              <div className="mt-1 flex items-start gap-2">
+                <p className="text-xs text-gray-500 font-display flex-1">
+                  XLS-89 metadata for vault share tokens. Use compact keys: t
+                  (ticker), n (name), i (icon), d (desc), ac (asset_class), in
+                  (issuer_name)
+                </p>
+                {mptMetadata && (() => {
+                  try {
+                    const parsed = JSON.parse(mptMetadata);
+                    const encoded = encodeMPTokenMetadata(parsed);
+                    return (
+                      <p className="text-xs text-cyber-green font-display mono-text">
+                        {encoded.length / 2} bytes
+                      </p>
+                    );
+                  } catch {
+                    return (
+                      <p className="text-xs text-red-400 font-display">
+                        Invalid JSON
+                      </p>
+                    );
+                  }
+                })()}
+              </div>
+              {mptMetadata && (() => {
+                try {
+                  const parsed = JSON.parse(mptMetadata);
+                  const encoded = encodeMPTokenMetadata(parsed);
+                  return (
+                    <div className="mt-2 p-2 bg-cyber-darker/50 border border-cyber-blue/20 rounded">
+                      <p className="text-[10px] text-gray-500 font-display mb-1">
+                        Hex Preview:
+                      </p>
+                      <p className="text-xs text-cyber-blue font-display mono-text break-all">
+                        {encoded}
+                      </p>
+                    </div>
+                  );
+                } catch {
+                  return (
+                    <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded">
+                      <p className="text-xs text-red-400 font-display">
+                        Invalid JSON format. Please check your syntax.
+                      </p>
+                    </div>
+                  );
+                }
+              })()}
             </div>
 
             {/* Flags */}
