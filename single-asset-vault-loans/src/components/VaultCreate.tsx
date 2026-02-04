@@ -22,8 +22,62 @@ import {
   Check,
   ExternalLink,
 } from "lucide-react";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { EditorView } from "@codemirror/view";
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { tags as t } from "@lezer/highlight";
 import { type XRPLAccount } from "../types/account";
 import { JSONViewer } from "./JSONViewer";
+
+// Custom syntax highlighting for cyber theme
+const cyberHighlightStyle = HighlightStyle.define([
+  { tag: t.propertyName, color: "#a78bfa" }, // Purple for keys
+  { tag: t.string, color: "#00d9ff" }, // Cyber blue for string values
+  { tag: t.number, color: "#34d399" }, // Green for numbers
+  { tag: t.bool, color: "#fbbf24" }, // Amber for true/false
+  { tag: t.null, color: "#9ca3af" }, // Gray for null
+  { tag: t.punctuation, color: "#6b7280" }, // Gray for brackets and colons
+  { tag: t.brace, color: "#00d9ff" }, // Cyber blue for braces
+]);
+
+// Custom theme for CodeMirror matching the cyber aesthetic
+const cyberTheme = EditorView.theme(
+  {
+    "&": {
+      backgroundColor: "rgb(10 14 23 / 0.5)",
+      color: "#e5e7eb",
+    },
+    ".cm-content": {
+      caretColor: "#00d9ff",
+      fontFamily:
+        "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    },
+    ".cm-cursor, .cm-dropCursor": {
+      borderLeftColor: "#00d9ff",
+    },
+    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
+      {
+        backgroundColor: "rgb(0 217 255 / 0.2)",
+      },
+    ".cm-activeLine": {
+      backgroundColor: "rgb(0 217 255 / 0.05)",
+    },
+    ".cm-gutters": {
+      backgroundColor: "rgb(10 14 23 / 0.8)",
+      color: "#6b7280",
+      border: "none",
+    },
+    ".cm-activeLineGutter": {
+      backgroundColor: "rgb(0 217 255 / 0.1)",
+      color: "#00d9ff",
+    },
+    ".cm-line": {
+      color: "#e5e7eb",
+    },
+  },
+  { dark: true },
+);
 
 interface VaultCreateProps {
   client: Client;
@@ -531,61 +585,93 @@ export function VaultCreate({
                   <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
               </div>
-              <textarea
-                value={mptMetadata}
-                onChange={(e) => setMptMetadata(e.target.value)}
-                placeholder={`{\n  "t": "VAULT",\n  "n": "My Vault Shares",\n  "i": "https://example.com/icon.png",\n  "d": "Shares for my XRP vault",\n  "ac": "defi"\n}`}
-                rows={8}
-                className="cyber-input resize-none font-mono text-xs"
-              />
-              <div className="mt-1 flex items-start gap-2">
-                <p className="text-xs text-gray-500 font-display flex-1">
-                  XLS-89 metadata for vault share tokens. Use compact keys: t
-                  (ticker), n (name), i (icon), d (desc), ac (asset_class), in
-                  (issuer_name)
-                </p>
-                {mptMetadata && (() => {
-                  try {
-                    const parsed = JSON.parse(mptMetadata);
-                    const encoded = encodeMPTokenMetadata(parsed);
-                    return (
-                      <p className="text-xs text-cyber-green font-display mono-text">
-                        {encoded.length / 2} bytes
-                      </p>
-                    );
-                  } catch {
-                    return (
-                      <p className="text-xs text-red-400 font-display">
-                        Invalid JSON
-                      </p>
-                    );
-                  }
-                })()}
+              <div className="border border-cyber-blue/30 rounded-lg overflow-hidden bg-cyber-darker/50">
+                <CodeMirror
+                  value={mptMetadata}
+                  height="200px"
+                  extensions={[json(), syntaxHighlighting(cyberHighlightStyle)]}
+                  onChange={(value) => setMptMetadata(value)}
+                  theme={cyberTheme}
+                  placeholder={`{\n  "t": "VAULT",\n  "n": "My Vault Shares",\n  "i": "https://example.com/icon.png",\n  "d": "Shares for my XRP vault",\n  "ac": "defi"\n}`}
+                  basicSetup={{
+                    lineNumbers: true,
+                    highlightActiveLineGutter: true,
+                    highlightSpecialChars: true,
+                    foldGutter: true,
+                    drawSelection: true,
+                    dropCursor: true,
+                    allowMultipleSelections: true,
+                    indentOnInput: true,
+                    bracketMatching: true,
+                    closeBrackets: true,
+                    autocompletion: true,
+                    rectangularSelection: true,
+                    crosshairCursor: true,
+                    highlightActiveLine: true,
+                    highlightSelectionMatches: true,
+                    closeBracketsKeymap: true,
+                    searchKeymap: true,
+                    foldKeymap: true,
+                    completionKeymap: true,
+                    lintKeymap: true,
+                  }}
+                  style={{
+                    fontSize: "12px",
+                    fontFamily:
+                      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                  }}
+                />
+                <div className="mt-1 flex items-start gap-2">
+                  <p className="text-xs text-gray-500 font-display flex-1">
+                    XLS-89 metadata for vault share tokens. Use compact keys: t
+                    (ticker), n (name), i (icon), d (desc), ac (asset_class), in
+                    (issuer_name)
+                  </p>
+                  {mptMetadata &&
+                    (() => {
+                      try {
+                        const parsed = JSON.parse(mptMetadata);
+                        const encoded = encodeMPTokenMetadata(parsed);
+                        return (
+                          <p className="text-xs text-cyber-green font-display mono-text">
+                            {encoded.length / 2} bytes
+                          </p>
+                        );
+                      } catch {
+                        return (
+                          <p className="text-xs text-red-400 font-display">
+                            Invalid JSON
+                          </p>
+                        );
+                      }
+                    })()}
+                </div>
+                {mptMetadata &&
+                  (() => {
+                    try {
+                      const parsed = JSON.parse(mptMetadata);
+                      const encoded = encodeMPTokenMetadata(parsed);
+                      return (
+                        <div className="mt-2 p-2 bg-cyber-darker/50 border border-cyber-blue/20 rounded">
+                          <p className="text-[10px] text-gray-500 font-display mb-1">
+                            Hex Preview:
+                          </p>
+                          <p className="text-xs text-cyber-blue font-display mono-text break-all">
+                            {encoded}
+                          </p>
+                        </div>
+                      );
+                    } catch {
+                      return (
+                        <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded">
+                          <p className="text-xs text-red-400 font-display">
+                            Invalid JSON format. Please check your syntax.
+                          </p>
+                        </div>
+                      );
+                    }
+                  })()}
               </div>
-              {mptMetadata && (() => {
-                try {
-                  const parsed = JSON.parse(mptMetadata);
-                  const encoded = encodeMPTokenMetadata(parsed);
-                  return (
-                    <div className="mt-2 p-2 bg-cyber-darker/50 border border-cyber-blue/20 rounded">
-                      <p className="text-[10px] text-gray-500 font-display mb-1">
-                        Hex Preview:
-                      </p>
-                      <p className="text-xs text-cyber-blue font-display mono-text break-all">
-                        {encoded}
-                      </p>
-                    </div>
-                  );
-                } catch {
-                  return (
-                    <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded">
-                      <p className="text-xs text-red-400 font-display">
-                        Invalid JSON format. Please check your syntax.
-                      </p>
-                    </div>
-                  );
-                }
-              })()}
             </div>
 
             {/* Flags */}
