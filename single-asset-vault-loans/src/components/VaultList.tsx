@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Client, isMPTAmount } from "xrpl";
 import type Vault from "xrpl/dist/npm/models/ledger/Vault";
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { type XRPLAccount } from "../types/account";
 import { isIssuedCurrencyAmount } from "xrpl/dist/npm/models/transactions/common";
+import { useAccountVaults } from "../api";
 
 interface VaultListProps {
   client: Client;
@@ -22,48 +23,15 @@ interface VaultListProps {
 
 export function VaultList({ client, account }: VaultListProps) {
   const navigate = useNavigate();
-  const [vaults, setVaults] = useState<Vault[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (account && client.isConnected()) {
-      loadVaults();
-    }
-  }, [account, client]);
-
-  const loadVaults = async () => {
-    if (!account) return;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Query account objects to find vaults
-      const response = await client.request({
-        command: "account_objects",
-        account: account.address,
-        type: "vault",
-      });
-
-      // Filter for Vault ledger entries
-      const vaultObjects = response.result.account_objects.filter(
-        (obj): obj is Vault => obj.LedgerEntryType === "Vault",
-      );
-
-      setVaults(vaultObjects);
-    } catch (err: any) {
-      console.error("Failed to load vaults:", err);
-      if (err.data?.error === "actNotFound") {
-        setVaults([]);
-      } else {
-        setError(err.message || "Failed to load vaults");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Use React Query hook for vaults
+  const {
+    data: vaults = [],
+    isLoading,
+    error,
+    refetch,
+  } = useAccountVaults(client, account?.address);
 
   const formatAsset = (asset: Vault["Asset"]): string => {
     if (isMPTAmount(asset)) {
@@ -120,9 +88,11 @@ export function VaultList({ client, account }: VaultListProps) {
         <h3 className="text-lg font-display font-medium text-gray-300 mb-2">
           Error Loading Vaults
         </h3>
-        <p className="text-sm text-gray-500 font-display mb-4">{error}</p>
+        <p className="text-sm text-gray-500 font-display mb-4">
+          {error instanceof Error ? error.message : "Failed to load vaults"}
+        </p>
         <button
-          onClick={loadVaults}
+          onClick={() => refetch()}
           className="cyber-button text-sm px-4 py-2 cursor-pointer"
         >
           Try Again
@@ -145,7 +115,7 @@ export function VaultList({ client, account }: VaultListProps) {
           managing assets.
         </p>
         <button
-          onClick={loadVaults}
+          onClick={() => refetch()}
           className="text-sm font-display text-cyber-blue hover:text-cyber-purple transition-all cursor-pointer hover:scale-110"
         >
           Refresh
@@ -166,7 +136,7 @@ export function VaultList({ client, account }: VaultListProps) {
           </p>
         </div>
         <button
-          onClick={loadVaults}
+          onClick={() => refetch()}
           className="cyber-button text-sm px-4 py-2 cursor-pointer"
         >
           Refresh

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Client, isMPTAmount } from "xrpl";
-import type { VaultInfoResponse } from "xrpl/dist/npm/models/methods/vaultInfo";
 import { motion } from "framer-motion";
+import { useVaultInfo } from "../api";
 import {
   ArrowLeft,
   Vault as VaultIcon,
@@ -31,39 +31,14 @@ interface VaultDetailProps {
 export function VaultDetail({ client }: VaultDetailProps) {
   const { vaultId } = useParams<{ vaultId: string }>();
   const navigate = useNavigate();
-  const [vaultData, setVaultData] = useState<
-    VaultInfoResponse["result"] | null
-  >(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (vaultId && client.isConnected()) {
-      loadVaultDetails();
-    }
-  }, [vaultId, client]);
-
-  const loadVaultDetails = async () => {
-    if (!vaultId) return;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await client.request({
-        command: "vault_info",
-        vault_id: vaultId,
-      });
-
-      setVaultData(response.result);
-    } catch (err: any) {
-      console.error("Failed to load vault details:", err);
-      setError(err.message || "Failed to load vault details");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Use React Query hook for vault info
+  const {
+    data: vaultData,
+    isLoading,
+    error,
+  } = useVaultInfo(client, vaultId);
 
   const formatAsset = (asset: any): string => {
     if (isMPTAmount(asset)) {
@@ -116,7 +91,7 @@ export function VaultDetail({ client }: VaultDetailProps) {
           Error Loading Vault
         </h3>
         <p className="text-sm text-gray-500 font-display mb-6">
-          {error || "Vault not found"}
+          {error instanceof Error ? error.message : "Vault not found"}
         </p>
         <div className="flex gap-3 justify-center">
           <button
@@ -126,10 +101,10 @@ export function VaultDetail({ client }: VaultDetailProps) {
             Back to Vaults
           </button>
           <button
-            onClick={loadVaultDetails}
+            onClick={() => window.location.reload()}
             className="cyber-button-secondary text-sm px-4 py-2 cursor-pointer"
           >
-            Try Again
+            Reload Page
           </button>
         </div>
       </div>

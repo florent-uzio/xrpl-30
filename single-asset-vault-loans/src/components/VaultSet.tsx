@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Client,
@@ -8,6 +8,7 @@ import {
   validate,
   type VaultSet,
 } from "xrpl";
+import { useVaultInfo } from "../api";
 import { motion } from "framer-motion";
 import {
   Vault,
@@ -46,53 +47,33 @@ export function VaultSet({
   const [data, setData] = useState("");
   const [domainId, setDomainId] = useState("");
 
-  // Fetch current vault data to show current values
-  const [vaultData, setVaultData] = useState<any>(null);
-  const [isLoadingVault, setIsLoadingVault] = useState(true);
-
-  useEffect(() => {
-    if (vaultId && client.isConnected()) {
-      loadVaultData();
-    }
-  }, [vaultId, client]);
-
-  const loadVaultData = async () => {
-    if (!vaultId) return;
-
-    setIsLoadingVault(true);
-    try {
-      const response = await client.request({
-        command: "vault_info",
-        vault_id: vaultId,
-      });
-
-      console.log(response);
-
-      setVaultData(response.result.vault);
-
+  // Use React Query hook for vault info
+  const {
+    data: vaultInfoData,
+    isLoading: isLoadingVault,
+    error: vaultError,
+  } = useVaultInfo(client, vaultId, {
+    onSuccess: (data) => {
+      const vault = data.vault;
       // Pre-populate form with current values
       // @ts-expect-error working, the SDK is not complete yet
-      if (response.result.vault.Data) {
-        // Decode hex data if it exists
+      if (vault.Data) {
         try {
           // @ts-expect-error working, the SDK is not complete yet
-          const hexString = response.result.vault.Data;
+          const hexString = vault.Data;
           const decoded = convertHexToString(hexString);
           setData(decoded);
         } catch {
           // If decode fails, leave empty
         }
       }
-      if (response.result.vault.shares.DomainID) {
-        setDomainId(response.result.vault.shares.DomainID);
+      if (vault.shares?.DomainID) {
+        setDomainId(vault.shares.DomainID);
       }
-    } catch (err) {
-      console.error("Failed to load vault:", err);
-      setError("Failed to load vault data");
-    } finally {
-      setIsLoadingVault(false);
-    }
-  };
+    },
+  });
+
+  const vaultData = vaultInfoData?.vault;
 
   // Build transaction preview dynamically
   const transactionPreview = useMemo(() => {
@@ -239,6 +220,28 @@ export function VaultSet({
         <p className="text-sm text-gray-400 font-display">
           Loading vault data...
         </p>
+      </div>
+    );
+  }
+
+  if (vaultError) {
+    return (
+      <div className="cyber-card p-12 text-center">
+        <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
+        <h3 className="text-lg font-display font-medium text-gray-300 mb-2">
+          Error Loading Vault
+        </h3>
+        <p className="text-sm text-gray-500 font-display mb-6">
+          {vaultError instanceof Error
+            ? vaultError.message
+            : "Failed to load vault"}
+        </p>
+        <button
+          onClick={() => navigate("/vaults")}
+          className="cyber-button text-sm px-4 py-2 cursor-pointer"
+        >
+          Back to Vaults
+        </button>
       </div>
     );
   }
