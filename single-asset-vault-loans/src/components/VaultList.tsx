@@ -175,7 +175,6 @@ export function VaultList({ client, account }: VaultListProps) {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {vaults.map((vault, index) => {
-          console.dir(vault, { depth: null });
           const isPrivate = !!(vault.Flags & 0x00010000);
 
           return (

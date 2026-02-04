@@ -18,6 +18,7 @@ import {
   Database,
   Copy,
   Check,
+  Edit,
 } from "lucide-react";
 import { type XRPLAccount } from "../types/account";
 import { isIssuedCurrencyAmount } from "xrpl/dist/npm/models/transactions/common";
@@ -156,6 +157,13 @@ export function VaultDetail({ client }: VaultDetailProps) {
             Comprehensive view of vault state and configuration
           </p>
         </div>
+        <button
+          onClick={() => navigate(`/vaults/${vaultId}/edit`)}
+          className="cyber-button flex items-center gap-2 px-4 py-2 cursor-pointer"
+        >
+          <Edit className="w-4 h-4" />
+          <span>Edit Vault</span>
+        </button>
       </div>
 
       {/* Vault ID Card */}

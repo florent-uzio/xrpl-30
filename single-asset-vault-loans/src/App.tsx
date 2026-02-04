@@ -27,6 +27,7 @@ import { updateAccountLabel } from "./utils/storage";
 import { VaultCreate } from "./components/VaultCreate";
 import { VaultList } from "./components/VaultList";
 import { VaultDetail } from "./components/VaultDetail";
+import { VaultSet } from "./components/VaultSet";
 import { LoanManager } from "./components/LoanManager";
 import { TransactionHistory } from "./components/TransactionHistory";
 
@@ -448,6 +449,24 @@ function App() {
                   transition={{ duration: 0.2 }}
                 >
                   <VaultDetail client={client} account={selectedAccount} />
+                </motion.div>
+              }
+            />
+            <Route
+              path="/vaults/:vaultId/edit"
+              element={
+                <motion.div
+                  key="vault-edit"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <VaultSet
+                    client={client}
+                    account={selectedAccount}
+                    onTransactionSubmitted={handleTransactionSubmitted}
+                  />
                 </motion.div>
               }
             />
