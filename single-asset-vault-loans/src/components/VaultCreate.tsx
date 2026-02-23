@@ -469,7 +469,7 @@ export function VaultCreate({
             {/* Assets Maximum */}
             <div>
               <label className="block text-sm font-display font-medium text-gray-300 mb-2">
-                Maximum Assets (DISABLED does not work currently with xrpl.js)
+                Maximum Assets
               </label>
               <div className="relative">
                 <input
@@ -478,7 +478,6 @@ export function VaultCreate({
                   onChange={(e) => setAssetsMaximum(e.target.value)}
                   placeholder={assetType === "XRP" ? "1000000000" : "1000000"}
                   className="cyber-input pr-12"
-                  disabled
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   <Coins className="w-4 h-4 text-gray-500" />
