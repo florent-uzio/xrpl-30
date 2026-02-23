@@ -1,7 +1,8 @@
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
-import { Client } from "xrpl";
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
+import { Client, Wallet, validate, type VaultDelete } from "xrpl";
 import type { VaultInfoResponse } from "xrpl/dist/npm/models/methods/vaultInfo";
 import type Vault from "xrpl/dist/npm/models/ledger/Vault";
+import type { XRPLAccount } from "../types/account";
 
 /**
  * Fetch vault information by vault ID
@@ -98,5 +99,36 @@ export const useAccountVaults = (
       return failureCount < 3;
     },
     ...options,
+  });
+};
+
+/**
+ * Mutation hook to delete a vault
+ */
+export const useDeleteVault = (
+  client: Client | null,
+  account: XRPLAccount | null,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (vaultId: string) => {
+      if (!client || !account) throw new Error("Client or account not provided");
+      if (!account.seed) throw new Error("Account seed not found");
+
+      const tx: VaultDelete = {
+        TransactionType: "VaultDelete",
+        Account: account.address,
+        VaultID: vaultId,
+      };
+
+      validate(tx);
+
+      const wallet = Wallet.fromSeed(account.seed);
+      return client.submitAndWait(tx, { autofill: true, wallet });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vaults", account?.address] });
+    },
   });
 };

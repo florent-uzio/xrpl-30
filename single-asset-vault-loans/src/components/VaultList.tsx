@@ -11,10 +11,13 @@ import {
   AlertCircle,
   Copy,
   Check,
+  Trash2,
+  X,
+  Loader2,
 } from "lucide-react";
 import { type XRPLAccount } from "../types/account";
 import { isIssuedCurrencyAmount } from "xrpl/dist/npm/models/transactions/common";
-import { useAccountVaults } from "../api";
+import { useAccountVaults, useDeleteVault } from "../api";
 
 interface VaultListProps {
   client: Client;
@@ -24,6 +27,7 @@ interface VaultListProps {
 export function VaultList({ client, account }: VaultListProps) {
   const navigate = useNavigate();
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // Use React Query hook for vaults
   const {
@@ -32,6 +36,8 @@ export function VaultList({ client, account }: VaultListProps) {
     error,
     refetch,
   } = useAccountVaults(client, account?.address);
+
+  const deleteVault = useDeleteVault(client, account);
 
   const formatAsset = (asset: Vault["Asset"]): string => {
     if (isMPTAmount(asset)) {
@@ -56,6 +62,24 @@ export function VaultList({ client, account }: VaultListProps) {
     } catch (err) {
       console.error("Failed to copy vault ID:", err);
     }
+  };
+
+  const handleDeleteClick = (vaultId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteVault.reset();
+    setConfirmDeleteId(vaultId);
+  };
+
+  const handleDeleteCancel = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirmDeleteId(null);
+    deleteVault.reset();
+  };
+
+  const handleDeleteConfirm = (vaultId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirmDeleteId(null);
+    deleteVault.mutate(vaultId);
   };
 
   if (!account) {
@@ -143,6 +167,21 @@ export function VaultList({ client, account }: VaultListProps) {
         </button>
       </div>
 
+      {deleteVault.isError && (
+        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
+          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+          <p className="text-sm font-display text-red-300 flex-1">
+            {deleteVault.error?.message || "Failed to delete vault"}
+          </p>
+          <button
+            onClick={() => deleteVault.reset()}
+            className="p-1 hover:bg-red-500/10 rounded transition-colors cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5 text-red-400" />
+          </button>
+        </div>
+      )}
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {vaults.map((vault, index) => {
           const isPrivate = !!(vault.Flags & 0x00010000);
@@ -160,7 +199,7 @@ export function VaultList({ client, account }: VaultListProps) {
                 <div className="p-2 bg-cyber-blue/20 rounded-lg">
                   <VaultIcon className="w-5 h-5 text-cyber-blue" />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   {isPrivate && (
                     <div
                       className="p-1.5 bg-cyber-purple/20 rounded"
@@ -168,6 +207,40 @@ export function VaultList({ client, account }: VaultListProps) {
                     >
                       <Lock className="w-3 h-3 text-cyber-purple" />
                     </div>
+                  )}
+                  {deleteVault.isPending && deleteVault.variables === vault.index ? (
+                    <div className="p-1.5">
+                      <Loader2 className="w-3.5 h-3.5 text-red-400 animate-spin" />
+                    </div>
+                  ) : confirmDeleteId === vault.index ? (
+                    <div
+                      className="flex items-center gap-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span className="text-[10px] text-red-400 font-display">
+                        Delete?
+                      </span>
+                      <button
+                        onClick={(e) => handleDeleteConfirm(vault.index, e)}
+                        className="p-1 bg-red-500/20 hover:bg-red-500/40 border border-red-500/50 rounded text-[10px] font-display text-red-400 transition-colors cursor-pointer"
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={handleDeleteCancel}
+                        className="p-1 bg-cyber-darker hover:bg-cyber-blue/10 border border-cyber-blue/30 rounded transition-colors cursor-pointer"
+                      >
+                        <X className="w-3 h-3 text-gray-400" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => handleDeleteClick(vault.index, e)}
+                      className="p-1.5 hover:bg-red-500/10 rounded transition-colors cursor-pointer group"
+                      title="Delete Vault"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-gray-500 group-hover:text-red-400 transition-colors" />
+                    </button>
                   )}
                 </div>
               </div>
