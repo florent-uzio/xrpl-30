@@ -625,17 +625,23 @@ const MultiAccountBatch: React.FC<MultiAccountBatchProps> = ({
                         <label className="block text-xs font-medium text-gray-700 mb-1">
                           Destination
                         </label>
-                        <input
-                          type="text"
+                        <select
                           value={tx.destination}
                           onChange={(e) =>
                             updateTransaction(tx.id, {
                               destination: e.target.value,
                             })
                           }
-                          placeholder="r..."
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
-                        />
+                        >
+                          <option value="">Select Destination</option>
+                          {accounts.map((acc) => (
+                            <option key={acc.address} value={acc.address}>
+                              {acc.label ? `${acc.label} - ` : ""}
+                              {acc.address.slice(0, 8)}...{acc.address.slice(-6)}
+                            </option>
+                          ))}
+                        </select>
                         {errors[`tx-${tx.id}-destination`] && (
                           <p className="text-red-500 text-xs mt-1">
                             {errors[`tx-${tx.id}-destination`]}
