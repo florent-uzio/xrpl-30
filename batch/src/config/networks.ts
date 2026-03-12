@@ -23,4 +23,4 @@ export const NETWORKS: Record<string, NetworkConfig> = {
   },
 };
 
-export const DEFAULT_NETWORK_KEY = "devnet";
+export const DEFAULT_NETWORK_KEY = "pdenv";
