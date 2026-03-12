@@ -10,6 +10,7 @@ import {
   Shield,
   Link,
 } from "lucide-react";
+import { NETWORKS, DEFAULT_NETWORK_KEY } from "./config/networks";
 
 // Components
 import AccountManager from "./components/AccountManager";
@@ -51,9 +52,11 @@ interface TransactionRecord {
   timestamp: Date;
 }
 
-const DEVNET_URL = "wss://s.devnet.rippletest.net:51233";
-
 function App() {
+  const [selectedNetworkKey, setSelectedNetworkKey] =
+    useState(DEFAULT_NETWORK_KEY);
+  const network = NETWORKS[selectedNetworkKey];
+
   const [client, setClient] = useState<Client | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
@@ -74,15 +77,17 @@ function App() {
     TransactionRecord[]
   >([]);
 
-  // Initialize XRPL client
+  // Initialize / reinitialize XRPL client when network changes
   useEffect(() => {
+    let xrplClient: Client;
+
     const initClient = async () => {
       try {
-        const xrplClient = new Client(DEVNET_URL);
+        xrplClient = new Client(network.wss);
         await xrplClient.connect();
         setClient(xrplClient);
         setIsConnected(true);
-        console.log("Connected to XRPL Devnet");
+        console.log(`Connected to ${network.label} (${network.wss})`);
       } catch (error) {
         console.error("Failed to connect to XRPL:", error);
       }
@@ -91,11 +96,21 @@ function App() {
     initClient();
 
     return () => {
-      if (client) {
-        client.disconnect();
-      }
+      xrplClient?.disconnect();
+      setClient(null);
+      setIsConnected(false);
     };
-  }, []);
+  }, [selectedNetworkKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleNetworkChange = (networkKey: string) => {
+    // Clear all network-specific state before switching
+    setAccounts([]);
+    setSelectedAccount(null);
+    setCreatedTokens([]);
+    setTransactionHistory([]);
+    setTransactionJson("");
+    setSelectedNetworkKey(networkKey);
+  };
 
   // Check regularly connection status
   const handleConnection = async () => {
@@ -168,27 +183,45 @@ function App() {
                 XRPL Batch Transaction Demo
               </h1>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
+              {/* Network selector */}
+              <select
+                value={selectedNetworkKey}
+                onChange={(e) => handleNetworkChange(e.target.value)}
+                className="px-2 py-1 text-xs md:text-sm border border-gray-300 rounded-lg bg-white text-gray-700 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {Object.entries(NETWORKS).map(([key, net]) => (
+                  <option key={key} value={key}>
+                    {net.label}
+                  </option>
+                ))}
+              </select>
+
               <button
                 onClick={handleConnection}
                 className="px-3 py-1 rounded-full text-xs md:text-sm border cursor-pointer hidden md:block"
               >
-                Refresh connection status
+                Refresh
               </button>
 
-              <div
-                className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
-                  isConnected
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
+              <div className="flex flex-col items-end gap-0.5">
                 <div
-                  className={`w-2 h-2 rounded-full ${
-                    isConnected ? "bg-green-500" : "bg-red-500"
+                  className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
+                    isConnected
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
                   }`}
-                />
-                <span>{isConnected ? "Connected" : "Disconnected"}</span>
+                >
+                  <div
+                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      isConnected ? "bg-green-500" : "bg-red-500"
+                    }`}
+                  />
+                  <span>{isConnected ? "Connected" : "Disconnected"}</span>
+                </div>
+                <span className="text-xs text-gray-400 font-mono truncate max-w-[140px] md:max-w-xs px-1">
+                  {network.wss}
+                </span>
               </div>
             </div>
           </div>
@@ -213,6 +246,8 @@ function App() {
               onAccountUpdate={updateAccount}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
+              faucetHost={network.faucetHost}
+              faucetPath={network.faucetPath}
             />
             <TokenList tokens={createdTokens} />
           </motion.div>
@@ -383,7 +418,10 @@ function App() {
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <TransactionHistory transactions={transactionHistory} />
+                      <TransactionHistory
+                        transactions={transactionHistory}
+                        explorerUrl={network.explorerUrl}
+                      />
                     </motion.div>
                   )}
                 </AnimatePresence>
