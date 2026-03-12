@@ -168,7 +168,7 @@ function App() {
                 XRPL Batch Transaction Demo
               </h1>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               <button
                 onClick={handleConnection}
                 className="px-3 py-1 rounded-full text-xs md:text-sm border cursor-pointer hidden md:block"
@@ -176,19 +176,24 @@ function App() {
                 Refresh connection status
               </button>
 
-              <div
-                className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
-                  isConnected
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
+              <div className="flex flex-col items-end gap-0.5">
                 <div
-                  className={`w-2 h-2 rounded-full ${
-                    isConnected ? "bg-green-500" : "bg-red-500"
+                  className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
+                    isConnected
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
                   }`}
-                />
-                <span>{isConnected ? "Connected" : "Disconnected"}</span>
+                >
+                  <div
+                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      isConnected ? "bg-green-500" : "bg-red-500"
+                    }`}
+                  />
+                  <span>{isConnected ? "Connected" : "Disconnected"}</span>
+                </div>
+                <span className="text-xs text-gray-400 font-mono truncate max-w-[140px] md:max-w-xs px-1">
+                  {DEVNET_URL}
+                </span>
               </div>
             </div>
           </div>
