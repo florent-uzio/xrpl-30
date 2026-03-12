@@ -33,6 +33,8 @@ interface AccountManagerProps {
   onAccountUpdate: (account: Account) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  faucetHost: string;
+  faucetPath: string;
 }
 
 const AccountManager: React.FC<AccountManagerProps> = ({
@@ -44,9 +46,11 @@ const AccountManager: React.FC<AccountManagerProps> = ({
   onAccountUpdate,
   isLoading,
   setIsLoading,
+  faucetHost,
+  faucetPath,
 }) => {
   const [showSecrets, setShowSecrets] = useState<{ [key: string]: boolean }>(
-    {}
+    {},
   );
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [showImportForm, setShowImportForm] = useState(false);
@@ -61,7 +65,11 @@ const AccountManager: React.FC<AccountManagerProps> = ({
     setIsLoading(true);
     try {
       const wallet = Wallet.generate();
-      await client.fundWallet(wallet, { amount: "10" });
+      await client.fundWallet(wallet, {
+        amount: "80",
+        faucetHost,
+        faucetPath,
+      });
 
       const accountInfo = await client.request({
         command: "account_info",
@@ -103,7 +111,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
 
       // Check if account already exists
       const accountExists = accounts.some(
-        (acc) => acc.address === wallet.address
+        (acc) => acc.address === wallet.address,
       );
 
       if (accountExists) {
@@ -142,7 +150,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
     } catch (error: any) {
       console.error("Failed to import account:", error);
       setImportError(
-        error.message || "Invalid seed. Please check and try again."
+        error.message || "Invalid seed. Please check and try again.",
       );
     } finally {
       setIsLoading(false);

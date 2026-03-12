@@ -1,5 +1,5 @@
 import React from "react";
-import { FileText, CheckCircle, XCircle, Copy, Check } from "lucide-react";
+import { FileText, CheckCircle, XCircle, Copy, Check, ExternalLink } from "lucide-react";
 import { useState } from "react";
 
 interface TransactionRecord {
@@ -12,10 +12,12 @@ interface TransactionRecord {
 
 interface TransactionHistoryProps {
   transactions: TransactionRecord[];
+  explorerUrl: string;
 }
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = ({
   transactions,
+  explorerUrl,
 }) => {
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
 
@@ -117,11 +119,22 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
               </button>
             </div>
             <div className="mt-3 pt-3 border-t border-gray-200">
-              <div className="flex items-center space-x-2">
-                <span className="text-xs font-medium text-gray-500">Hash:</span>
-                <code className="text-xs font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded">
-                  {tx.hash}
-                </code>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center space-x-2 min-w-0">
+                  <span className="text-xs font-medium text-gray-500 flex-shrink-0">Hash:</span>
+                  <code className="text-xs font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded truncate">
+                    {tx.hash}
+                  </code>
+                </div>
+                <a
+                  href={`${explorerUrl}/transactions/${tx.hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800 flex-shrink-0"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  <span>Explorer</span>
+                </a>
               </div>
             </div>
           </div>
