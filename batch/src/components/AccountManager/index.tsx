@@ -14,6 +14,13 @@ interface Account {
   label?: string;
 }
 
+interface CreatedToken {
+  mptIssuanceId?: string;
+  currency: string;
+  name?: string;
+  type: "MPT" | "IOU";
+}
+
 interface AccountManagerProps {
   client: Client | null;
   accounts: Account[];
@@ -21,6 +28,7 @@ interface AccountManagerProps {
   onAccountSelect: (account: Account) => void;
   onAccountAdd: (account: Account) => void;
   onAccountUpdate: (account: Account) => void;
+  createdTokens: CreatedToken[];
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   faucetHost: string;
@@ -34,6 +42,7 @@ const AccountManager: React.FC<AccountManagerProps> = ({
   onAccountSelect,
   onAccountAdd,
   onAccountUpdate,
+  createdTokens,
   isLoading,
   setIsLoading,
   faucetHost,
@@ -161,6 +170,8 @@ const AccountManager: React.FC<AccountManagerProps> = ({
             <AccountCard
               key={account.address}
               account={account}
+              client={client}
+              createdTokens={createdTokens}
               isSelected={selectedAccount?.address === account.address}
               onSelect={() => onAccountSelect(account)}
               onUpdate={onAccountUpdate}

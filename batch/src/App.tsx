@@ -244,6 +244,7 @@ function App() {
               onAccountSelect={setSelectedAccount}
               onAccountAdd={addAccount}
               onAccountUpdate={updateAccount}
+              createdTokens={createdTokens}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
               faucetHost={network.faucetHost}

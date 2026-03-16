@@ -429,7 +429,8 @@ const MultiAccountBatch: React.FC<MultiAccountBatchProps> = ({
     const acc = accounts.find((a) => a.address === address);
     if (!acc) return address;
     if (address === batchSubmitter?.address) return "Batch Submitter";
-    return `${address.slice(0, 8)}...${address.slice(-6)}`;
+    const shortAddress = `${address.slice(0, 8)}...${address.slice(-6)}`;
+    return acc.label ? `${acc.label} - ${shortAddress}` : shortAddress;
   };
 
   return (

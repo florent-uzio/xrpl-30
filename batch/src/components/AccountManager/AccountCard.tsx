@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Client } from "xrpl";
 import {
   Copy,
   Check,
@@ -10,6 +11,7 @@ import {
   Save,
   X,
 } from "lucide-react";
+import { useAccountObjects } from "../../api/queries/useAccountObjects";
 
 interface Account {
   address: string;
@@ -20,8 +22,17 @@ interface Account {
   label?: string;
 }
 
+interface CreatedToken {
+  mptIssuanceId?: string;
+  currency: string;
+  name?: string;
+  type: "MPT" | "IOU";
+}
+
 interface AccountCardProps {
   account: Account;
+  client: Client | null;
+  createdTokens: CreatedToken[];
   isSelected: boolean;
   onSelect: () => void;
   onUpdate: (account: Account) => void;
@@ -30,6 +41,8 @@ interface AccountCardProps {
 
 const AccountCard: React.FC<AccountCardProps> = ({
   account,
+  client,
+  createdTokens,
   isSelected,
   onSelect,
   onUpdate,
@@ -39,6 +52,14 @@ const AccountCard: React.FC<AccountCardProps> = ({
   const [copied, setCopied] = useState(false);
   const [editingLabel, setEditingLabel] = useState(false);
   const [labelValue, setLabelValue] = useState("");
+
+  const {
+    data: mpTokens = [],
+    isLoading: mpLoading,
+    isFetching: mpFetching,
+    isError: mpError,
+    refetch: refetchMPT,
+  } = useAccountObjects(client, account.address);
 
   const copyAddress = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -97,25 +118,42 @@ const AccountCard: React.FC<AccountCardProps> = ({
               className="text-sm px-2 py-1 border border-blue-300 rounded focus:ring-2 focus:ring-blue-500 flex-1"
               autoFocus
             />
-            <button onClick={saveLabel} className="p-1 hover:bg-green-100 rounded text-green-600" title="Save">
+            <button
+              onClick={saveLabel}
+              className="p-1 hover:bg-green-100 rounded text-green-600"
+              title="Save"
+            >
               <Save className="w-3 h-3" />
             </button>
-            <button onClick={cancelLabel} className="p-1 hover:bg-red-100 rounded text-red-600" title="Cancel">
+            <button
+              onClick={cancelLabel}
+              className="p-1 hover:bg-red-100 rounded text-red-600"
+              title="Cancel"
+            >
               <X className="w-3 h-3" />
             </button>
           </div>
         ) : (
           <>
             {account.label && (
-              <span className="text-sm font-semibold text-blue-600">{account.label}</span>
+              <span className="text-sm font-semibold text-blue-600">
+                {account.label}
+              </span>
             )}
             <span className="text-sm font-semibold text-gray-900 truncate">
               {account.address.slice(0, 8)}...{account.address.slice(-6)}
             </span>
-            <button onClick={startEditLabel} className="p-1 hover:bg-gray-100 rounded" title="Edit label">
+            <button
+              onClick={startEditLabel}
+              className="p-1 hover:bg-gray-100 rounded"
+              title="Edit label"
+            >
               <Edit2 className="w-3 h-3 text-gray-500" />
             </button>
-            <button onClick={copyAddress} className="p-1 hover:bg-gray-100 rounded">
+            <button
+              onClick={copyAddress}
+              className="p-1 hover:bg-gray-100 rounded"
+            >
               {copied ? (
                 <Check className="w-3 h-3 text-green-600" />
               ) : (
@@ -130,13 +168,69 @@ const AccountCard: React.FC<AccountCardProps> = ({
       <div className="flex items-center space-x-2 text-sm text-gray-600">
         <span>{account.balance} XRP</span>
         <button
-          onClick={(e) => { e.stopPropagation(); onRefreshBalance(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRefreshBalance();
+            refetchMPT();
+          }}
           className="p-1 hover:bg-gray-100 rounded"
-          title="Refresh balance"
+          title="Refresh balances"
         >
-          <RefreshCw className="w-3 h-3" />
+          <RefreshCw
+            className={`w-3 h-3 ${mpFetching ? "animate-spin" : ""}`}
+          />
         </button>
       </div>
+
+      {/* MPT section */}
+      {(mpLoading || mpTokens.length > 0 || mpError) && (
+        <div className="mt-2">
+          <div className="flex items-center space-x-1 mb-1">
+            <span className="text-xs font-medium text-indigo-600">MPTs</span>
+          </div>
+
+          {mpLoading && (
+            <div className="flex space-x-1">
+              <div className="h-5 w-24 bg-indigo-100 rounded animate-pulse" />
+              <div className="h-5 w-20 bg-indigo-100 rounded animate-pulse" />
+            </div>
+          )}
+
+          {mpError && !mpLoading && (
+            <span className="text-xs text-amber-600">
+              Failed to load MPTokens
+            </span>
+          )}
+
+          {!mpLoading && !mpError && mpTokens.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {mpTokens.map((token) => {
+                const meta = createdTokens.find(
+                  (t) =>
+                    t.type === "MPT" &&
+                    t.mptIssuanceId === token.MPTokenIssuanceID,
+                );
+                const label = meta
+                  ? meta.name || meta.currency
+                  : `${token.MPTokenIssuanceID.slice(0, 8)}…${token.MPTokenIssuanceID.slice(-4)}`;
+                return (
+                  <span
+                    key={token.MPTokenIssuanceID}
+                    className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-xs bg-indigo-100 text-indigo-700 border border-indigo-200"
+                    title={token.MPTokenIssuanceID}
+                  >
+                    <span className={meta ? undefined : "font-mono"}>
+                      {label}
+                    </span>
+                    <span className="text-indigo-400">·</span>
+                    <span>{token.MPTAmount ?? 0}</span>
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Secret row */}
       <div className="mt-3 pt-3 border-t border-gray-200">
@@ -151,7 +245,10 @@ const AccountCard: React.FC<AccountCardProps> = ({
               onClick={(e) => e.stopPropagation()}
             />
             <button
-              onClick={(e) => { e.stopPropagation(); setShowSecret((v) => !v); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSecret((v) => !v);
+              }}
               className="p-1 hover:bg-gray-100 rounded"
             >
               {showSecret ? (
@@ -160,7 +257,10 @@ const AccountCard: React.FC<AccountCardProps> = ({
                 <Eye className="w-3 h-3 text-gray-500" />
               )}
             </button>
-            <button onClick={copySecret} className="p-1 hover:bg-gray-100 rounded">
+            <button
+              onClick={copySecret}
+              className="p-1 hover:bg-gray-100 rounded"
+            >
               <Copy className="w-3 h-3 text-gray-500" />
             </button>
           </div>
